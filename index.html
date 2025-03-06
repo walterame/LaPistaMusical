@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Pista Musical</title>
+</head>
+<body>
+    <h1>La Pista Musical</h1>
+    
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre" placeholder="Tu nombre">
+
+    <label for="avatar">Elige tu avatar:</label>
+    <select id="avatar">
+        <option value="🎵">🎵 Nota</option>
+        <option value="🎤">🎤 Micrófono</option>
+        <option value="🥁">🥁 Batería</option>
+    </select>
+
+    <h2>Escribe tu respuesta:</h2>
+    <input type="text" id="respuesta" placeholder="Tu respuesta">
+    <button onclick="enviarRespuesta()">Enviar</button>
+
+    <h2>Respuestas de otros jugadores:</h2>
+    <ul id="respuestas"></ul>
+
+    <script>
+        let ws = new WebSocket("ws://2001:4860:7:701::f7:8080/game"); // Cambia por la IP de tu PC
+
+        ws.onmessage = function(event) {
+            let lista = document.getElementById("respuestas");
+            let item = document.createElement("li");
+            item.textContent = event.data;
+            lista.appendChild(item);
+        };
+
+        function enviarRespuesta() {
+            let nombre = document.getElementById("nombre").value || "Anónimo";
+            let avatar = document.getElementById("avatar").value;
+            let respuesta = document.getElementById("respuesta").value;
+
+            if (respuesta.trim() === "") return;
+
+            let mensaje = `${avatar} ${nombre}: ${respuesta}`;
+            ws.send(mensaje);
+            document.getElementById("respuesta").value = "";
+        }
+    </script>
+</body>
+</html>
