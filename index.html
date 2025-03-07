@@ -22,23 +22,61 @@
 
     <script>
         let ws;
+
         function unirse() {
-            let sala = document.getElementById("codigo").value;
-            let nombre = document.getElementById("nombre").value || "Anónimo";
+            let sala = document.getElementById("codigo").value.trim();
+            let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
             let avatar = document.getElementById("avatar").value;
 
-            ws = new WebSocket("ws://servidor-canciones.onrender.com");
+            if (!sala) {
+                console.error("❌ Error: El código de sala es obligatorio.");
+                alert("Por favor, ingresa un código de sala.");
+                return;
+            }
+
+            ws = new WebSocket("wss://servidor-canciones.onrender.com");
+
             ws.onopen = () => {
-                ws.send(JSON.stringify({ tipo: "unir", sala, nombre, avatar }));
+                console.log("✅ Conectado al servidor WebSocket.");
+                let mensaje = JSON.stringify({ tipo: "unir", sala, nombre, avatar });
+                console.log("📤 Enviando:", mensaje);
+                ws.send(mensaje);
+            };
+
+            ws.onmessage = (event) => {
+                console.log("📩 Mensaje recibido:", event.data);
+            };
+
+            ws.onerror = (event) => {
+                console.error("❌ Error en WebSocket:", event);
+            };
+
+            ws.onclose = () => {
+                console.warn("⚠️ Conexión WebSocket cerrada.");
             };
         }
 
         function enviarRespuesta() {
-            let respuesta = document.getElementById("respuesta").value;
-            let sala = document.getElementById("codigo").value;
-            let nombre = document.getElementById("nombre").value;
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                console.error("❌ Error: WebSocket no conectado.");
+                alert("No estás conectado a una sala.");
+                return;
+            }
+
+            let respuesta = document.getElementById("respuesta").value.trim();
+            let sala = document.getElementById("codigo").value.trim();
+            let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
             let avatar = document.getElementById("avatar").value;
-            ws.send(JSON.stringify({ tipo: "respuesta", sala, nombre, avatar, respuesta }));
+
+            if (!respuesta) {
+                console.error("❌ Error: No se puede enviar una respuesta vacía.");
+                alert("Por favor, ingresa una respuesta.");
+                return;
+            }
+
+            let mensaje = JSON.stringify({ tipo: "respuesta", sala, nombre, avatar, respuesta });
+            console.log("📤 Enviando:", mensaje);
+            ws.send(mensaje);
         }
     </script>
 </body>
