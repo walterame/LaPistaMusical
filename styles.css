@@ -7,6 +7,7 @@
 .unirse_text {
 display: flex;
 justify-content: center;
+margin-bottom: 10px;
 }
 
 .texto_and_input1, .texto_and_input2
