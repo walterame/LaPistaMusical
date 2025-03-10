@@ -17,7 +17,7 @@
 <div class="column_holder">
     <div class="texto_and_input1">
         <label for="codigo">Código de Sala:</label>
-        <input type="text" id="codigo" placeholder="" maxlength="4">
+        <input type="text" id="codigo" placeholder="" maxlength="4" autocapitalize="characters">
     </div>
     <div class="texto_and_input2">
         <label for="nombre">Tu Nombre:</label>
@@ -31,7 +31,9 @@
 
     <script>
         let ws;
-
+        document.getElementById("codigo").addEventListener("input", function () {
+        this.value = this.value.toUpperCase();
+    });
         function unirse() {
             let sala = document.getElementById("codigo").value.trim();
             let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
