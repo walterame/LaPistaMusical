@@ -1,0 +1,55 @@
+.unirse_text {
+display: flex;
+justify-content: center;
+}
+
+.texto_and_input1, .texto_and_input2
+{
+display: flex;
+justify-content: center;
+margin: 1rem 0 1rem 0;
+height: 2rem;
+}
+
+.texto_and_input1 label, .texto_and_input2 label
+{
+    font-size: larger;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+
+.column_holder
+{
+display: flex;
+flex-direction: column;
+align-content: space-around;
+justify-content: space-between;
+align-items: flex-end;
+flex-wrap: wrap;   
+}
+
+.boton_unirse {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.boton_unirse button {
+    font-size: 1.5rem; 
+    padding: 15px 30px; 
+    border: none;
+    border-radius: 10px;
+    background-color:#b3006d; 
+    color: white; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.boton_unirse button:hover {
+    background-color: #0056b3; 
+}
+

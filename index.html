@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
     <title>La Pista Musical</title>
 </head>
 <body>
-    <h1>Unirse a una Sala</h1>
+    <h1 class="unirse_text">Unirse a una Sala</h1>
     
-    <label for="codigo">Código de Sala:</label>
-    <input type="text" id="codigo" placeholder="Código de Sala">
-    
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" placeholder="Tu nombre">
+<div class="column_holder">
+    <div class="texto_and_input1">
+        <label for="codigo">Código de Sala:</label>
+        <input type="text" id="codigo" placeholder="Código de Sala">
+    </div>
+    <div class="texto_and_input2">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" placeholder="Tu nombre">
+    </div>
+</div>
+    <div class="boton_unirse">
+        <button onclick="unirse()">Unirse</button>
+    </div>
 
-    <button onclick="unirse()">Unirse</button>
 
     <script>
         let ws;
