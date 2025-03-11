@@ -50,8 +50,6 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: playerId, avatar: avatar })
-            }).then(() => {
-                alert("Avatar seleccionado con éxito!");
             }).catch(err => console.error("Error enviando avatar:", err));
         }
     </script>
