@@ -4,7 +4,7 @@
     box-sizing: border-box;
   }
 
-.unirse_text {
+.main_text {
 display: flex;
 justify-content: center;
 margin-bottom: 10px;
@@ -74,4 +74,25 @@ header img {
 
 #codigo {
     text-transform: uppercase;
+}
+
+/* ==== avatar-selector ==== */
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+}
+.avatar {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: transform 0.2s;
+}
+.avatar:hover {
+    transform: scale(1.1);
 }
