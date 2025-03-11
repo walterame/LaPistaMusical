@@ -45,13 +45,11 @@
             avatarGrid.appendChild(img);
         });
 
-        function seleccionarAvatar(avatar) {
+       function seleccionarAvatar(avatar) {
             fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: playerId, avatar: avatar })
-            }).then(() => {
-                alert("Avatar seleccionado con éxito!");
             }).catch(err => console.error("Error enviando avatar:", err));
         }
     </script>
