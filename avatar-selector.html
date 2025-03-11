@@ -50,24 +50,9 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: playerId, avatar: avatar })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Verifica si la respuesta es exitosa
-                if (data.mensaje) {
-                    console.log("Avatar seleccionado con éxito");
-                    // Enviar mensaje a Unity si la respuesta es correcta
-                    const mensaje = {
-                        tipo: "avatar-seleccionado",
-                        id: playerId,
-                        avatar: avatar
-                    };
-                    // Enviar mensaje WebSocket a Unity (si es posible)
-                    // Aquí necesitas acceder al WebSocket de Unity para enviar el mensaje.
-                    // Si Unity está escuchando, debe recibirlo correctamente.
-                }
-            })
-            .catch(err => console.error("Error enviando avatar:", err));
+            }).then(() => {
+                alert("Avatar seleccionado con éxito!");
+            }).catch(err => console.error("Error enviando avatar:", err));
         }
     </script>
 </body>
