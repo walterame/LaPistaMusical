@@ -12,7 +12,7 @@
         <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
     </header>
 
-    <h1 class="unirse_text">Unirse a una Sala</h1>
+    <h1 class="main_text">Unirse a una Sala</h1>
     
 <div class="column_holder">
     <div class="texto_and_input1">
@@ -29,54 +29,41 @@
     </div>
 
 
-   <script>
-    let ws;
-    document.getElementById("codigo").addEventListener("input", function () {
+    <script>
+        let ws;
+        document.getElementById("codigo").addEventListener("input", function () {
         this.value = this.value.toUpperCase();
     });
+        function unirse() {
+            let sala = document.getElementById("codigo").value.trim();
+            let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
 
-    function unirse() {
-        let sala = document.getElementById("codigo").value.trim();
-        let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
-
-        if (!sala) {
-            alert("Por favor, ingresa un código de sala.");
-            return;
-        }
-
-        ws = new WebSocket("wss://servidor-canciones.onrender.com");
-
-        ws.onopen = () => {
-            console.log("✅ Conectado al servidor WebSocket.");
-            let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
-            console.log("📤 Enviando:", mensaje);
-            ws.send(mensaje);
-        };
-
-        ws.onmessage = (event) => {
-            console.log("📩 Mensaje recibido:", event.data);
-            try {
-                let respuesta = JSON.parse(event.data);
-
-                if (respuesta.tipo === "confirmacion-union") {
-                    let playerId = respuesta.id;
-                    console.log("🔗 Redirigiendo a selección de avatar con ID:", playerId);
-                    window.location.href = `avatar-selector.html?id=${playerId}`;
-                }
-            } catch (error) {
-                console.error("❌ Error procesando mensaje WebSocket:", error);
+            if (!sala) {
+                alert("Por favor, ingresa un código de sala.");
+                return;
             }
-        };
 
-        ws.onerror = (event) => {
-            console.error("❌ Error en WebSocket:", event);
-        };
+            ws = new WebSocket("wss://servidor-canciones.onrender.com");
 
-        ws.onclose = () => {
-            console.warn("⚠️ Conexión WebSocket cerrada.");
-        };
-    }
-</script>
+            ws.onopen = () => {
+                console.log("✅ Conectado al servidor WebSocket.");
+                let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
+                console.log("📤 Enviando:", mensaje);
+                ws.send(mensaje);
+            };
 
+            ws.onmessage = (event) => {
+                console.log("📩 Mensaje recibido:", event.data);
+            };
+
+            ws.onerror = (event) => {
+                console.error("❌ Error en WebSocket:", event);
+            };
+
+            ws.onclose = () => {
+                console.warn("⚠️ Conexión WebSocket cerrada.");
+            };
+        }
+    </script>
 </body>
 </html>
