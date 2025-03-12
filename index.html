@@ -7,11 +7,9 @@
     <title>La Pista Musical</title>
 </head>
 <body>
-
     <header>
         <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
     </header>
-
     <h1 class="main_text">Unirse a una Sala</h1>
     
 <div class="column_holder">
@@ -25,57 +23,125 @@
     </div>
 </div>
     <div class="boton_unirse">
-        <button onclick="unirse()">Unirse</button>
+        <button onclick="unirse()" id="btnUnirse">Unirse</button>
     </div>
-
-
+    <div id="mensaje-estado" style="margin-top: 20px; text-align: center; display: none;">
+        Conectando...
+    </div>
     <script>
     let ws;
+    let intentosReconexion = 0;
+    const maxIntentosReconexion = 5;
+    let reconexionTimeout = null;
+    
     document.getElementById("codigo").addEventListener("input", function () {
         this.value = this.value.toUpperCase();
     });
-
+    
     function unirse() {
         let sala = document.getElementById("codigo").value.trim();
         let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
-
         if (!sala) {
             alert("Por favor, ingresa un código de sala.");
             return;
         }
-
+        
+        document.getElementById("btnUnirse").disabled = true;
+        document.getElementById("mensaje-estado").style.display = "block";
+        document.getElementById("mensaje-estado").textContent = "Conectando...";
+        
+        conectarWebSocket(sala, nombre);
+    }
+    
+    function conectarWebSocket(sala, nombre) {
+        if (ws) {
+            ws.close();
+        }
+        
         ws = new WebSocket("wss://servidor-canciones.onrender.com");
-
+        
         ws.onopen = () => {
             console.log("✅ Conectado al servidor WebSocket.");
+            intentosReconexion = 0; // Reiniciar contador de intentos
             let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
             console.log("📤 Enviando:", mensaje);
             ws.send(mensaje);
         };
-
+        
         ws.onmessage = (event) => {
             console.log("📩 Mensaje recibido:", event.data);
             try {
                 let respuesta = JSON.parse(event.data);
-
                 if (respuesta.tipo === "confirmacion-union") {
                     let playerId = respuesta.id;
-                    console.log("🔗 Redirigiendo a selección de avatar con ID:", playerId);
+                    let reconectado = respuesta.reconectado || false;
+                    
+                    console.log(`🔗 ${reconectado ? 'Reconectado' : 'Conectado'} con ID: ${playerId}`);
+                    
+                    // Guardar información en localStorage para potenciales reconexiones
+                    localStorage.setItem("salaActual", sala);
+                    localStorage.setItem("nombreJugador", nombre);
+                    localStorage.setItem("playerId", playerId);
+                    
+                    // Redirigir a la página de selección de avatar
                     window.location.href = `avatar-selector.html?id=${playerId}`;
+                }
+                else if (respuesta.tipo === "error") {
+                    document.getElementById("mensaje-estado").textContent = `Error: ${respuesta.mensaje}`;
+                    document.getElementById("btnUnirse").disabled = false;
+                }
+                else if (respuesta.tipo === "ping") {
+                    // Responder al ping para mantener la conexión activa
+                    console.log("🔄 Ping recibido");
                 }
             } catch (error) {
                 console.error("❌ Error procesando mensaje WebSocket:", error);
             }
         };
-
+        
         ws.onerror = (event) => {
             console.error("❌ Error en WebSocket:", event);
+            document.getElementById("mensaje-estado").textContent = "Error de conexión. Intentando reconectar...";
         };
-
-        ws.onclose = () => {
-            console.warn("⚠️ Conexión WebSocket cerrada.");
+        
+        ws.onclose = (event) => {
+            console.warn(`⚠️ Conexión WebSocket cerrada. Código: ${event.code}, Razón: ${event.reason}`);
+            
+            // Intentar reconectar si no fue un cierre intencional
+            if (intentosReconexion < maxIntentosReconexion) {
+                intentosReconexion++;
+                document.getElementById("mensaje-estado").textContent = 
+                    `Conexión perdida. Reconectando (${intentosReconexion}/${maxIntentosReconexion})...`;
+                
+                // Evitar múltiples timeouts
+                if (reconexionTimeout) {
+                    clearTimeout(reconexionTimeout);
+                }
+                
+                reconexionTimeout = setTimeout(() => {
+                    conectarWebSocket(sala, nombre);
+                }, 3000);
+            } else {
+                document.getElementById("mensaje-estado").textContent = 
+                    "No se pudo conectar después de varios intentos. Por favor, intenta de nuevo.";
+                document.getElementById("btnUnirse").disabled = false;
+            }
         };
     }
+    
+    // Verificar si tenemos una sesión guardada e intentar reconectar automáticamente
+    window.addEventListener("load", function() {
+        const salaGuardada = localStorage.getItem("salaActual");
+        const nombreGuardado = localStorage.getItem("nombreJugador");
+        
+        if (salaGuardada && nombreGuardado) {
+            document.getElementById("codigo").value = salaGuardada;
+            document.getElementById("nombre").value = nombreGuardado;
+            
+            // Opcionalmente, reconectar automáticamente
+            // unirse();
+        }
+    });
 </script>
 </body>
 </html>
