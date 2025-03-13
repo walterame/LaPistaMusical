@@ -54,19 +54,19 @@
     }
     
     function conectarWebSocket(sala, nombre) {
-        if (ws) {
-            ws.close();
-        }
-        
-        ws = new WebSocket("wss://servidor-canciones.onrender.com");
-        
-        ws.onopen = () => {
-            console.log("✅ Conectado al servidor WebSocket.");
-            intentosReconexion = 0; // Reiniciar contador de intentos
-            let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
-            console.log("📤 Enviando:", mensaje);
-            ws.send(mensaje);
-        };
+    if (ws) {
+        console.log("🔴 Cerrando WebSocket anterior antes de conectar uno nuevo.");
+        ws.close(); // Asegura que la conexión anterior se cierre antes de abrir una nueva
+    }
+    
+    ws = new WebSocket("wss://servidor-canciones.onrender.com");
+
+    ws.onopen = () => {
+        console.log("✅ Conectado al servidor WebSocket.");
+        let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
+        console.log("📤 Enviando:", mensaje);
+        ws.send(mensaje);
+    };
         
         ws.onmessage = (event) => {
             console.log("📩 Mensaje recibido:", event.data);
