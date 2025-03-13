@@ -12,8 +12,21 @@
     </header>
     <h1 class="main_text">Selecciona tu Avatar</h1>
     <div class="avatar-grid" id="avatarGrid"></div>
+    <div id="mensaje-estado" style="margin-top: 20px; text-align: center; display: none;">
+        Conectando...
+    </div>
     
     <script>
+        let ws;
+        let intentosReconexion = 0;
+        const maxIntentosReconexion = 5;
+        let reconexionTimeout = null;
+        
+        const playerId = new URLSearchParams(window.location.search).get('id');
+        const salaActual = localStorage.getItem("salaActual");
+        const nombreJugador = localStorage.getItem("nombreJugador");
+        
+        // Mostrar avatares
         const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
         "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
         "Amy Winehouse.webp", "Antonio Rios.webp", "Axel Roses.webp", 
@@ -34,7 +47,6 @@
         "Ricardo Arjona.webp", "Ricardo Montaner.webp", "Rick Astley.webp",
         "Ricky Maravilla.webp", "Sandro.webp", "Sergio Denis.webp", 
         "Taylor Swift.webp", "Tini.webp"];
-        const playerId = new URLSearchParams(window.location.search).get('id'); // Obtener el ID del jugador
         
         const avatarGrid = document.getElementById("avatarGrid");
         avatars.forEach(avatar => {
@@ -45,13 +57,112 @@
             avatarGrid.appendChild(img);
         });
 
+        // Función para seleccionar avatar
         function seleccionarAvatar(avatar) {
+            // Método 1: Usando conexión WebSocket si está disponible
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    tipo: "seleccionar-avatar",
+                    id: playerId,
+                    avatar: avatar
+                }));
+                console.log("Enviado avatar por WebSocket:", avatar);
+            }
+            
+            // Método 2: Siempre usar el endpoint HTTP como respaldo
             fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: playerId, avatar: avatar })
-            }).catch(err => console.error("Error enviando avatar:", err));
+            })
+            .then(response => response.json())
+            .then(data => console.log("Respuesta del servidor:", data))
+            .catch(err => console.error("Error enviando avatar:", err));
         }
+        
+        // Establecer conexión WebSocket al cargar la página
+        function conectarWebSocket() {
+            if (!salaActual || !nombreJugador || !playerId) {
+                console.error("❌ Falta información de sesión. No se puede reconectar.");
+                return;
+            }
+            
+            document.getElementById("mensaje-estado").style.display = "block";
+            document.getElementById("mensaje-estado").textContent = "Reconectando...";
+            
+            if (ws) {
+                ws.close();
+            }
+            
+            ws = new WebSocket("wss://servidor-canciones.onrender.com");
+            
+            ws.onopen = () => {
+                console.log("✅ Conectado al servidor WebSocket desde selección de avatar.");
+                intentosReconexion = 0;
+                let mensaje = JSON.stringify({ 
+                    tipo: "unir", 
+                    sala: salaActual, 
+                    nombre: nombreJugador 
+                });
+                console.log("📤 Enviando:", mensaje);
+                ws.send(mensaje);
+                document.getElementById("mensaje-estado").style.display = "none";
+            };
+            
+            ws.onmessage = (event) => {
+                console.log("📩 Mensaje recibido:", event.data);
+                try {
+                    let respuesta = JSON.parse(event.data);
+                    if (respuesta.tipo === "confirmacion-union") {
+                        console.log(`🔗 Reconectado con ID: ${respuesta.id}`);
+                    }
+                    else if (respuesta.tipo === "error") {
+                        document.getElementById("mensaje-estado").textContent = `Error: ${respuesta.mensaje}`;
+                        document.getElementById("mensaje-estado").style.display = "block";
+                    }
+                    else if (respuesta.tipo === "ping") {
+                        // Responder al ping para mantener la conexión activa
+                        console.log("🔄 Ping recibido");
+                    }
+                } catch (error) {
+                    console.error("❌ Error procesando mensaje WebSocket:", error);
+                }
+            };
+            
+            ws.onerror = (event) => {
+                console.error("❌ Error en WebSocket:", event);
+                document.getElementById("mensaje-estado").textContent = "Error de conexión. Intentando reconectar...";
+                document.getElementById("mensaje-estado").style.display = "block";
+            };
+            
+            ws.onclose = (event) => {
+                console.warn(`⚠️ Conexión WebSocket cerrada. Código: ${event.code}, Razón: ${event.reason}`);
+                
+                // Intentar reconectar si no fue un cierre intencional
+                if (intentosReconexion < maxIntentosReconexion) {
+                    intentosReconexion++;
+                    document.getElementById("mensaje-estado").textContent = 
+                        `Conexión perdida. Reconectando (${intentosReconexion}/${maxIntentosReconexion})...`;
+                    document.getElementById("mensaje-estado").style.display = "block";
+                    
+                    // Evitar múltiples timeouts
+                    if (reconexionTimeout) {
+                        clearTimeout(reconexionTimeout);
+                    }
+                    
+                    reconexionTimeout = setTimeout(() => {
+                        conectarWebSocket();
+                    }, 3000);
+                } else {
+                    document.getElementById("mensaje-estado").textContent = 
+                        "No se pudo conectar después de varios intentos.";
+                    document.getElementById("mensaje-estado").style.display = "block";
+                }
+            };
+        }
+        
+        // Iniciar la conexión al cargar la página
+        window.addEventListener("load", conectarWebSocket);
     </script>
 </body>
 </html>
