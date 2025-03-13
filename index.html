@@ -53,23 +53,23 @@
         conectarWebSocket(sala, nombre);
     }
     
-    function conectarWebSocket(sala, nombre) {
+   function conectarWebSocket(sala, nombre) {
     if (ws) {
         console.log("🔴 Cerrando WebSocket anterior antes de conectar uno nuevo.");
-        ws.close(); // Asegura que la conexión anterior se cierre antes de abrir una nueva
+        ws.close();
     }
     
     ws = new WebSocket("wss://servidor-canciones.onrender.com");
 
     ws.onopen = () => {
-        console.log("✅ Conectado al servidor WebSocket.");
+        console.log("✅ WebSocket abierto. Enviando datos de unión...");
         let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
         console.log("📤 Enviando:", mensaje);
         ws.send(mensaje);
     };
         
         ws.onmessage = (event) => {
-            console.log("📩 Mensaje recibido:", event.data);
+             console.log("📩 Mensaje recibido:", event.data);
             try {
                 let respuesta = JSON.parse(event.data);
                 if (respuesta.tipo === "confirmacion-union") {
@@ -100,12 +100,12 @@
         };
         
         ws.onerror = (event) => {
-            console.error("❌ Error en WebSocket:", event);
+             console.error("❌ Error en WebSocket:", event);
             document.getElementById("mensaje-estado").textContent = "Error de conexión. Intentando reconectar...";
         };
         
         ws.onclose = (event) => {
-            console.warn(`⚠️ Conexión WebSocket cerrada. Código: ${event.code}, Razón: ${event.reason}`);
+             console.warn(`⚠️ WebSocket cerrado. Código: ${event.code}, Razón: ${event.reason}`);
             
             // Intentar reconectar si no fue un cierre intencional
             if (intentosReconexion < maxIntentosReconexion) {
