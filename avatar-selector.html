@@ -70,7 +70,7 @@
             }
             
             // Método 2: Siempre usar el endpoint HTTP como respaldo
-            fetch("https://broadleaf-darkened-fall.glitch.me/seleccionar-avatar", {
+          fetch("https://broadleaf-darkened-fall.glitch.me/seleccionar-avatar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: playerId, avatar: avatar })
@@ -94,7 +94,7 @@
                 ws.close();
             }
             
-            ws = new WebSocket("wss://servidor-canciones.onrender.com");
+            ws = new WebSocket("wss://broadleaf-darkened-fall.glitch.me");
             
             ws.onopen = () => {
                 console.log("✅ Conectado al servidor WebSocket desde selección de avatar.");
