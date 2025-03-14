@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <link rel="stylesheet" href="./styles.css">
     <title>La Pista Musical</title>
 </head>
@@ -31,12 +30,14 @@
 </div>
 
 <script>
-    const socket = io("https://servidor-canciones.onrender.com");
+    // Establecer la conexión WebSocket
+    const socket = new WebSocket("wss://servidor-canciones.onrender.com");  // URL de tu servidor WebSocket
 
     document.getElementById("codigo").addEventListener("input", function () {
         this.value = this.value.toUpperCase();
     });
 
+    // Enviar datos al servidor cuando el usuario se una
     function unirse() {
         let sala = document.getElementById("codigo").value.trim();
         let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
@@ -46,15 +47,37 @@
             return;
         }
 
-        socket.emit("unir", { sala, nombre });
-
-        socket.on("nuevo-jugador", (jugador) => {
-            console.log("👤 Nuevo jugador:", jugador);
-            if (jugador.id === socket.id) {
-                window.location.href = `avatar-selector.html?id=${jugador.id}`;
-            }
+        const mensaje = JSON.stringify({
+            tipo: "unir",
+            sala: sala,
+            nombre: nombre
         });
+
+        // Enviar el mensaje al servidor WebSocket
+        socket.send(mensaje);
+
+        // Escuchar la respuesta del servidor
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.evento === "nuevo-jugador") {
+                console.log("👤 Nuevo jugador:", data.jugador);
+                if (data.jugador.id === socket.id) {
+                    // Redirigir al jugador a la página de selección de avatar
+                    window.location.href = `avatar-selector.html?id=${data.jugador.id}`;
+                }
+            }
+        };
     }
+
+    // Escuchar errores de WebSocket
+    socket.onerror = function (error) {
+        console.error("WebSocket Error:", error);
+    };
+
+    // Escuchar cierre de la conexión WebSocket
+    socket.onclose = function () {
+        console.log("Conexión WebSocket cerrada");
+    };
 </script>
 
 </body>
