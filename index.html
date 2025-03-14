@@ -3,145 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <link rel="stylesheet" href="./styles.css">
     <title>La Pista Musical</title>
 </head>
 <body>
-    <header>
-        <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
-    </header>
-    <h1 class="main_text">Unirse a una Sala</h1>
-    
+
+<header>
+    <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
+</header>
+
+<h1 class="unirse_text">Unirse a una Sala</h1>
+
 <div class="column_holder">
     <div class="texto_and_input1">
         <label for="codigo">Código de Sala:</label>
-        <input type="text" id="codigo" placeholder="" maxlength="4" autocapitalize="characters">
+        <input type="text" id="codigo" maxlength="4" autocapitalize="characters">
     </div>
     <div class="texto_and_input2">
         <label for="nombre">Tu Nombre:</label>
-        <input type="text" id="nombre" placeholder="" maxlength="12">
+        <input type="text" id="nombre" maxlength="12">
     </div>
 </div>
-    <div class="boton_unirse">
-        <button onclick="unirse()" id="btnUnirse">Unirse</button>
-    </div>
-    <div id="mensaje-estado" style="margin-top: 20px; text-align: center; display: none;">
-        Conectando...
-    </div>
-    <script>
-    let ws;
-    let intentosReconexion = 0;
-    const maxIntentosReconexion = 5;
-    let reconexionTimeout = null;
-    
+
+<div class="boton_unirse">
+    <button onclick="unirse()">Unirse</button>
+</div>
+
+<script>
+    const socket = io("https://servidor-canciones.onrender.com");
+
     document.getElementById("codigo").addEventListener("input", function () {
         this.value = this.value.toUpperCase();
     });
-    
+
     function unirse() {
         let sala = document.getElementById("codigo").value.trim();
         let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
+
         if (!sala) {
             alert("Por favor, ingresa un código de sala.");
             return;
         }
-        
-        document.getElementById("btnUnirse").disabled = true;
-        document.getElementById("mensaje-estado").style.display = "block";
-        document.getElementById("mensaje-estado").textContent = "Conectando...";
-        
-        conectarWebSocket(sala, nombre);
-    }
-    
-   function conectarWebSocket(sala, nombre) {
-    if (ws) {
-        console.log("🔴 Cerrando WebSocket anterior antes de conectar uno nuevo.");
-        ws.close();
-    }
-    
-    ws = new WebSocket("wss://broadleaf-darkened-fall.glitch.me");
 
-    ws.onopen = () => {
-        console.log("✅ WebSocket abierto. Enviando datos de unión...");
-        let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
-        console.log("📤 Enviando:", mensaje);
-        ws.send(mensaje);
-    };
-        
-        ws.onmessage = (event) => {
-             console.log("📩 Mensaje recibido:", event.data);
-            try {
-                let respuesta = JSON.parse(event.data);
-                if (respuesta.tipo === "confirmacion-union") {
-                    let playerId = respuesta.id;
-                    let reconectado = respuesta.reconectado || false;
-                    
-                    console.log(`🔗 ${reconectado ? 'Reconectado' : 'Conectado'} con ID: ${playerId}`);
-                    
-                    // Guardar información en localStorage para potenciales reconexiones
-                    localStorage.setItem("salaActual", sala);
-                    localStorage.setItem("nombreJugador", nombre);
-                    localStorage.setItem("playerId", playerId);
-                    
-                    // Redirigir a la página de selección de avatar
-                    window.location.href = `avatar-selector.html?id=${playerId}`;
-                }
-                else if (respuesta.tipo === "error") {
-                    document.getElementById("mensaje-estado").textContent = `Error: ${respuesta.mensaje}`;
-                    document.getElementById("btnUnirse").disabled = false;
-                }
-                else if (respuesta.tipo === "ping") {
-                    // Responder al ping para mantener la conexión activa
-                    console.log("🔄 Ping recibido");
-                }
-            } catch (error) {
-                console.error("❌ Error procesando mensaje WebSocket:", error);
+        socket.emit("unir", { sala, nombre });
+
+        socket.on("nuevo-jugador", (jugador) => {
+            console.log("👤 Nuevo jugador:", jugador);
+            if (jugador.id === socket.id) {
+                window.location.href = `avatar-selector.html?id=${jugador.id}`;
             }
-        };
-        
-        ws.onerror = (event) => {
-             console.error("❌ Error en WebSocket:", event);
-            document.getElementById("mensaje-estado").textContent = "Error de conexión. Intentando reconectar...";
-        };
-        
-        ws.onclose = (event) => {
-             console.warn(`⚠️ WebSocket cerrado. Código: ${event.code}, Razón: ${event.reason}`);
-            
-            // Intentar reconectar si no fue un cierre intencional
-            if (intentosReconexion < maxIntentosReconexion) {
-                intentosReconexion++;
-                document.getElementById("mensaje-estado").textContent = 
-                    `Conexión perdida. Reconectando (${intentosReconexion}/${maxIntentosReconexion})...`;
-                
-                // Evitar múltiples timeouts
-                if (reconexionTimeout) {
-                    clearTimeout(reconexionTimeout);
-                }
-                
-                reconexionTimeout = setTimeout(() => {
-                    conectarWebSocket(sala, nombre);
-                }, 3000);
-            } else {
-                document.getElementById("mensaje-estado").textContent = 
-                    "No se pudo conectar después de varios intentos. Por favor, intenta de nuevo.";
-                document.getElementById("btnUnirse").disabled = false;
-            }
-        };
+        });
     }
-    
-    // Verificar si tenemos una sesión guardada e intentar reconectar automáticamente
-    window.addEventListener("load", function() {
-        const salaGuardada = localStorage.getItem("salaActual");
-        const nombreGuardado = localStorage.getItem("nombreJugador");
-        
-        if (salaGuardada && nombreGuardado) {
-            document.getElementById("codigo").value = salaGuardada;
-            document.getElementById("nombre").value = nombreGuardado;
-            
-            // Opcionalmente, reconectar automáticamente
-            // unirse();
-        }
-    });
 </script>
+
 </body>
 </html>
