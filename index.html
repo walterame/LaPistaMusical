@@ -37,37 +37,43 @@
         this.value = this.value.toUpperCase();
     });
 
-    // Enviar datos al servidor cuando el usuario se una
-    function unirse() {
-        let sala = document.getElementById("codigo").value.trim();
-        let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
+   // Enviar datos al servidor cuando el usuario se una
+function unirse() {
+    let sala = document.getElementById("codigo").value.trim();
+    let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
 
-        if (!sala) {
-            alert("Por favor, ingresa un código de sala.");
-            return;
-        }
-
-        const mensaje = JSON.stringify({
-            tipo: "unir",
-            sala: sala,
-            nombre: nombre
-        });
-
-        // Enviar el mensaje al servidor WebSocket
-        socket.send(mensaje);
-
-        // Escuchar la respuesta del servidor
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            if (data.evento === "nuevo-jugador") {
-                console.log("👤 Nuevo jugador:", data.jugador);
-                if (data.jugador.id === socket.id) {
-                    // Redirigir al jugador a la página de selección de avatar
-                    window.location.href = `avatar-selector.html?id=${data.jugador.id}`;
-                }
-            }
-        };
+    if (!sala) {
+        alert("Por favor, ingresa un código de sala.");
+        return;
     }
+
+    const mensaje = JSON.stringify({
+        tipo: "unir",
+        sala: sala,
+        nombre: nombre
+    });
+
+    // Enviar el mensaje al servidor WebSocket
+    socket.send(mensaje);
+
+    // Escuchar la respuesta del servidor
+    socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+
+        // Verificar si 'evento' y 'jugador' existen en la respuesta
+        if (data.evento === "nuevo-jugador" && data.jugador) {
+            console.log("👤 Nuevo jugador:", data.jugador);
+            
+            // Asegúrate de que el jugador tiene un id antes de intentar acceder a él
+            if (data.jugador.id === socket.id) {
+                // Redirigir al jugador a la página de selección de avatar
+                window.location.href = `avatar-selector.html?id=${data.jugador.id}`;
+            }
+        } else {
+            console.error("❌ El jugador no está definido en la respuesta:", data);
+        }
+    };
+}
 
     // Escuchar errores de WebSocket
     socket.onerror = function (error) {
