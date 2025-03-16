@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Selecciona tu Avatar</title>
+</head>
+<body>
+
+<header>
+    <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
+</header>
+
+<h1 class="main_text">Selecciona tu Avatar</h1>
+
+<div class="avatar-grid" id="avatarGrid"></div>
+
+<script>
+        
+    // Mostrar avatares
+    const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
+    "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
+    "Amy Winehouse.webp", "Antonio Rios.webp", "Axel Roses.webp", 
+    "Bob Marley.webp", "Britney Spears.webp", "Cacho Castaña.webp", 
+    "Celine Dion.webp", "Chano.webp", "Charly Garcia.webp", 
+    "Chester Bennington.webp", "Christina Aguilera.webp", "Conejito Alejandro.webp",
+    "Cristian Castro.webp", "Diego Torres.webp", "Dread Mar I.webp",
+    "Dyango.webp", "El Polaco.webp", "Elvis Presley.webp", "Emily Armstrong.webp",
+    "Fito Paez.webp", "Freddie Mercury.webp", "Gene Simmons.webp", 
+    "George Michael.webp", "Gilda.webp", "Gustavo Ceratti.webp",
+    "Indio Solari.webp", "James Hetfield.webp", "John Lennon.webp",
+    "Ke Personales.webp", "La Mona Jimenez.webp", "Lali.webp",
+    "Leo Mattioli.webp", "Limp Bizkit.webp", "Luis Miguel.webp",
+    "Madonna.webp", "Maria Becerra.webp", "Michael Jackson.webp",
+    "Mick Jagger.webp", "Mike Shinoda.webp", "Miranda.webp", 
+    "Natalia Oreiro.webp", "Palito Ortega.webp", "Pelado Cordera.webp",
+    "Pimpinela.webp", "Pity Alvarez.webp", "Pocho La Pantera.webp",
+    "Ricardo Arjona.webp", "Ricardo Montaner.webp", "Rick Astley.webp",
+    "Ricky Maravilla.webp", "Sandro.webp", "Sergio Denis.webp", 
+    "Taylor Swift.webp", "Tini.webp"];
+    
+    const avatarGrid = document.getElementById("avatarGrid");
+
+    avatars.forEach(avatar => {
+        let img = document.createElement("img");
+        img.src = "./images/avatars/" + avatar;
+        img.classList.add("avatar");
+        img.onclick = () => seleccionarAvatar(avatar);
+        avatarGrid.appendChild(img);
+    });
+
+
+</script>
+
+</body>
+</html>
