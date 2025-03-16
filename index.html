@@ -29,7 +29,40 @@
     <button onclick="unirse()">Unirse</button>
 </div>
 
+<!-- Agregar el script de Socket.IO -->
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
+<script>
+    // Conexión al servidor de Socket.IO
+    const socket = io("https://servidor-canciones.onrender.com"); // URL de tu servidor
+
+    function unirse() {
+        const codigoSala = document.getElementById('codigo').value;
+        const nombre = document.getElementById('nombre').value;
+
+        // Verificar si los campos están completos
+        if (!codigoSala || !nombre) {
+            alert("Por favor, ingresa el código de sala y tu nombre.");
+            return;
+        }
+
+        // Enviar la solicitud al servidor para unirse a la sala
+        socket.emit("unirse_a_sala", { codigo: codigoSala, nombre: nombre });
+
+        // Aquí podrías agregar más acciones, como redirigir a la página de selección de avatar
+        alert(`Unido a la sala con el código: ${codigoSala}`);
+    }
+
+    // Escuchar eventos del servidor, si es necesario
+    socket.on("sala_unida", (data) => {
+        console.log("Has unido a la sala", data);
+        // Redirigir o realizar otra acción después de unirse correctamente
+    });
+
+    socket.on("error_sala", (message) => {
+        alert(message); // Mostrar mensaje de error si no se puede unir a la sala
+    });
+</script>
 
 </body>
 </html>
