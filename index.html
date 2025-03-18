@@ -64,11 +64,9 @@
 
                     // Guardamos la info en sessionStorage para recuperarla en la siguiente página
                     sessionStorage.setItem("playerId", playerId);
-                    sessionStorage.setItem("playerName", nombre);
                     sessionStorage.setItem("sala", sala);
-                //if (avatar) sessionStorage.setItem("avatar", avatar);
-
-                    window.location.href = `avatar-selector.html?id=${playerId}`;
+                    sessionStorage.setItem("playerName", playerName);
+                    window.location.href = "avatar-selector.html";
                 }
             } catch (error) {
                 console.error("❌ Error procesando mensaje WebSocket:", error);

@@ -15,12 +15,23 @@
     
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-        // Obtener información guardada en sessionStorage
-        const playerId = sessionStorage.getItem("playerId");
-        const playerName = sessionStorage.getItem("playerName");
-        const sala = sessionStorage.getItem("sala");
+            
+            // Obtener información guardada en sessionStorage
+            const playerId = sessionStorage.getItem("playerId");
+            const playerName = sessionStorage.getItem("playerName");
+            const sala = sessionStorage.getItem("sala");
 
-        console.log(`Jugador: ${playerName} (ID: ${playerId}) en sala: ${sala}`);
+            console.log(`Jugador: ${playerName} (ID: ${playerId}) en sala: ${sala}`);
+
+            // Conectar con el servidor
+            const socket = io("https://servidor-canciones.onrender.com");
+
+            // Reestablecer la conexión del jugador en el servidor
+            socket.emit("reconectarJugador", { id: playerId, sala: sala, nombre: playerName });
+
+            socket.on("jugadorReconectado", (data) => {
+                console.log("Reconectado:", data);
+            });
 
         const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
         "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
@@ -54,26 +65,26 @@
         });
 
         function seleccionarAvatar(avatar) {
-    fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: playerId, avatar: avatar })
-    })
-    .then(response => response.json())  // Asumimos que el servidor responde con JSON
-    .then(data => {
-        if (data.success) {
-            alert("Avatar seleccionado con éxito!");
-            // Redirigir o actualizar la página según lo necesites
-        } else {
-            alert("Hubo un error al seleccionar el avatar.");
-        }
-    })
-    .catch(err => {
-        console.error("Error enviando avatar:", err);
-        alert("Hubo un error al seleccionar el avatar.");
-    });
-}
-});
+                fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: playerId, avatar: avatar })
+                })
+                .then(response => response.json())  
+                .then(data => {
+                    if (data.success) {
+                        sessionStorage.setItem("avatar", avatar);  
+                        window.location.href = "juego.html";  // Redirigir al juego
+                    } else {
+                        alert("Hubo un error al seleccionar el avatar.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error enviando avatar:", err);
+                    alert("Hubo un error al seleccionar el avatar.");
+                });
+            }
+        });
     </script>
 </body>
 </html>
