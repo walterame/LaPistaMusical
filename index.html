@@ -61,6 +61,13 @@
                 if (respuesta.tipo === "confirmacion-union") {
                     let playerId = respuesta.id;
                     console.log("🔗 Redirigiendo a selección de avatar con ID:", playerId);
+
+                    // Guardamos la info en sessionStorage para recuperarla en la siguiente página
+                    sessionStorage.setItem("playerId", playerId);
+                    sessionStorage.setItem("playerName", nombre);
+                    sessionStorage.setItem("sala", sala);
+                if (avatar) sessionStorage.setItem("avatar", avatar);
+
                     window.location.href = `avatar-selector.html?id=${playerId}`;
                 }
             } catch (error) {

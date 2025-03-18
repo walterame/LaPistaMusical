@@ -14,6 +14,14 @@
     <div class="avatar-grid" id="avatarGrid"></div>
     
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        // Obtener información guardada en sessionStorage
+        const playerId = sessionStorage.getItem("playerId");
+        const playerName = sessionStorage.getItem("playerName");
+        const sala = sessionStorage.getItem("sala");
+
+        console.log(`Jugador: ${playerName} (ID: ${playerId}) en sala: ${sala}`);
+
         const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
         "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
         "Amy Winehouse.webp", "Antonio Rios.webp", "Axel Roses.webp", 
@@ -34,7 +42,7 @@
         "Ricardo Arjona.webp", "Ricardo Montaner.webp", "Rick Astley.webp",
         "Ricky Maravilla.webp", "Sandro.webp", "Sergio Denis.webp", 
         "Taylor Swift.webp", "Tini.webp"];
-        const playerId = new URLSearchParams(window.location.search).get('id'); // Obtener el ID del jugador
+        
         
         const avatarGrid = document.getElementById("avatarGrid");
         avatars.forEach(avatar => {
@@ -65,6 +73,7 @@
         alert("Hubo un error al seleccionar el avatar.");
     });
 }
+});
     </script>
 </body>
 </html>
