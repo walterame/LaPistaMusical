@@ -24,15 +24,33 @@
             console.log(`Jugador: ${playerName} (ID: ${playerId}) en sala: ${sala}`);
 
             // Conectar con el servidor
-            const socket = io("https://servidor-canciones.onrender.com");
+            const ws = new WebSocket("wss://servidor-canciones.onrender.com");
 
-            // Reestablecer la conexión del jugador en el servidor
-            socket.emit("reconectarJugador", { id: playerId, sala: sala, nombre: playerName });
+            ws.onopen = () => {
+                console.log("✅ Conectado al servidor WebSocket.");
+                ws.send(JSON.stringify({ tipo: "reconectarJugador", id: playerId, sala: sala, nombre: playerName }));
+            };
 
-            socket.on("jugadorReconectado", (data) => {
-                console.log("Reconectado:", data);
-            });
+            ws.onmessage = (event) => {
+                console.log("📩 Mensaje recibido:", event.data);
+                try {
+                    let respuesta = JSON.parse(event.data);
+                    if (respuesta.tipo === "jugadorReconectado") {
+                        console.log("🔗 Jugador reconectado:", respuesta);
+                    }
+                } catch (error) {
+                    console.error("❌ Error procesando mensaje WebSocket:", error);
+                }
+            };
 
+            ws.onerror = (event) => {
+                console.error("❌ Error en WebSocket:", event);
+            };
+
+            ws.onclose = () => {
+                console.warn("⚠️ Conexión WebSocket cerrada.");
+            };
+            
         const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
         "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
         "Amy Winehouse.webp", "Antonio Rios.webp", "Axel Roses.webp", 
