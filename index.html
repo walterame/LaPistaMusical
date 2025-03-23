@@ -136,6 +136,7 @@
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log("Respuesta del servidor:", data); // Agregar este log
                     if (data.success) {
                         sessionStorage.setItem("avatar", avatar);
                         alert("Avatar seleccionado correctamente. ¡Listo para jugar!");
