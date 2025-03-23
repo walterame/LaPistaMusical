@@ -141,12 +141,12 @@
                         alert("Avatar seleccionado correctamente. ¡Listo para jugar!");
                         // Aquí puedes implementar la lógica para proceder al juego
                     } else {
-                        alert("Hubo un error al seleccionar el avatar.");
+                        alert("Hubo un error al seleccionar el avatar. No se guardo en sessionStorage");
                     }
                 })
                 .catch(err => {
                     console.error("Error enviando avatar:", err);
-                    alert("Hubo un error al seleccionar el avatar.");
+                    alert("Hubo un error al seleccionar el avatar 2.");
                 });
         }
     </script>
