@@ -7,80 +7,148 @@
     <title>La Pista Musical</title>
 </head>
 <body>
-
     <header>
         <img src="./images/Logo Pista Musical.webp" alt="Logo Pista Musical">
     </header>
 
-    <h1 class="main_text">Unirse a una Sala</h1>
-    
-<div class="column_holder">
-    <div class="texto_and_input1">
-        <label for="codigo">Código de Sala:</label>
-        <input type="text" id="codigo" placeholder="" maxlength="4" autocapitalize="characters">
-    </div>
-    <div class="texto_and_input2">
-        <label for="nombre">Tu Nombre:</label>
-        <input type="text" id="nombre" placeholder="" maxlength="12">
-    </div>
-</div>
-    <div class="boton_unirse">
-        <button onclick="unirse()">Unirse</button>
-    </div>
+    <!-- Sección de ingreso a la sala -->
+    <section id="joinSection" style="display: block;">
+        <h1 class="main_text">Unirse a una Sala</h1>
+        <div class="column_holder">
+            <div class="texto_and_input1">
+                <label for="codigo">Código de Sala:</label>
+                <input type="text" id="codigo" placeholder="" maxlength="4" autocapitalize="characters">
+            </div>
+            <div class="texto_and_input2">
+                <label for="nombre">Tu Nombre:</label>
+                <input type="text" id="nombre" placeholder="" maxlength="12">
+            </div>
+        </div>
+        <div class="boton_unirse">
+            <button onclick="unirse()">Unirse</button>
+        </div>
+    </section>
 
+    <!-- Sección de selección de avatar -->
+    <section id="avatarSection" style="display: none;">
+        <h1 class="main_text">Selecciona tu Avatar</h1>
+        <div class="avatar-grid" id="avatarGrid"></div>
+    </section>
 
-   <script>
-    let ws;
-    document.getElementById("codigo").addEventListener("input", function () {
-        this.value = this.value.toUpperCase();
-    });
+    <script>
+        let ws;
 
-    function unirse() {
-        let sala = document.getElementById("codigo").value.trim();
-        let nombre = document.getElementById("nombre").value.trim() || "Anónimo";
+        document.getElementById("codigo").addEventListener("input", function () {
+            this.value = this.value.toUpperCase();
+        });
 
-        if (!sala) {
-            alert("Por favor, ingresa un código de sala.");
-            return;
+        function unirse() {
+            const sala = document.getElementById("codigo").value.trim();
+            const nombre = document.getElementById("nombre").value.trim() || "Anónimo";
+
+            if (!sala) {
+                alert("Por favor, ingresa un código de sala.");
+                return;
+            }
+
+            ws = new WebSocket("wss://servidor-canciones.onrender.com");
+
+            ws.onopen = () => {
+                console.log("✅ Conectado al servidor WebSocket.");
+                const mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
+                console.log("📤 Enviando:", mensaje);
+                ws.send(mensaje);
+            };
+
+            ws.onmessage = (event) => {
+                console.log("📩 Mensaje recibido:", event.data);
+                try {
+                    const respuesta = JSON.parse(event.data);
+
+                    if (respuesta.tipo === "confirmacion-union") {
+                        const playerId = respuesta.id;
+
+                        console.log("🔗 Unión exitosa. Cambiando a selección de avatar.");
+                        sessionStorage.setItem("playerId", playerId);
+                        sessionStorage.setItem("sala", sala);
+                        sessionStorage.setItem("playerName", nombre);
+
+                        // Ocultar la sección de ingreso y mostrar la de selección de avatar
+                        document.getElementById("joinSection").style.display = "none";
+                        document.getElementById("avatarSection").style.display = "block";
+
+                        cargarAvatares();
+                    }
+                } catch (error) {
+                    console.error("❌ Error procesando mensaje WebSocket:", error);
+                }
+            };
+
+            ws.onerror = (event) => {
+                console.error("❌ Error en WebSocket:", event);
+            };
+
+            ws.onclose = () => {
+                console.warn("⚠️ Conexión WebSocket cerrada.");
+            };
         }
 
-        ws = new WebSocket("wss://servidor-canciones.onrender.com");
+        function cargarAvatares() {
+            const avatars = ["2D.webp", "Adrian Barilari.webp", "Alcides.webp", 
+        "Alejandro Lerner.webp", "Alfredo Casero.webp", "Amy Lee.webp", 
+        "Amy Winehouse.webp", "Antonio Rios.webp", "Axel Roses.webp", 
+        "Bob Marley.webp", "Britney Spears.webp", "Cacho Castaña.webp", 
+        "Celine Dion.webp", "Chano.webp", "Charly Garcia.webp", 
+        "Chester Bennington.webp", "Christina Aguilera.webp", "Conejito Alejandro.webp",
+        "Cristian Castro.webp", "Diego Torres.webp", "Dread Mar I.webp",
+        "Dyango.webp", "El Polaco.webp", "Elvis Presley.webp", "Emily Armstrong.webp",
+        "Fito Paez.webp", "Freddie Mercury.webp", "Gene Simmons.webp", 
+        "George Michael.webp", "Gilda.webp", "Gustavo Ceratti.webp",
+        "Indio Solari.webp", "James Hetfield.webp", "John Lennon.webp",
+        "Ke Personales.webp", "La Mona Jimenez.webp", "Lali.webp",
+        "Leo Mattioli.webp", "Limp Bizkit.webp", "Luis Miguel.webp",
+        "Madonna.webp", "Maria Becerra.webp", "Michael Jackson.webp",
+        "Mick Jagger.webp", "Mike Shinoda.webp", "Miranda.webp", 
+        "Natalia Oreiro.webp", "Palito Ortega.webp", "Pelado Cordera.webp",
+        "Pimpinela.webp", "Pity Alvarez.webp", "Pocho La Pantera.webp",
+        "Ricardo Arjona.webp", "Ricardo Montaner.webp", "Rick Astley.webp",
+        "Ricky Maravilla.webp", "Sandro.webp", "Sergio Denis.webp", 
+        "Taylor Swift.webp", "Tini.webp"];
 
-        ws.onopen = () => {
-            console.log("✅ Conectado al servidor WebSocket.");
-            let mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
-            console.log("📤 Enviando:", mensaje);
-            ws.send(mensaje);
-        };
+            const avatarGrid = document.getElementById("avatarGrid");
+            avatarGrid.innerHTML = ""; // Limpiar contenido previo
 
-        ws.onmessage = (event) => {
-            console.log("📩 Mensaje recibido:", event.data);
-            try {
-                let respuesta = JSON.parse(event.data);
+            avatars.forEach(avatar => {
+                const img = document.createElement("img");
+                img.src = "./images/avatars/" + avatar;
+                img.classList.add("avatar");
+                img.onclick = () => seleccionarAvatar(avatar);
+                avatarGrid.appendChild(img);
+            });
+        }
 
-                if (respuesta.tipo === "confirmacion-union") {
-                    let playerId = respuesta.id;
-                    console.log("🔗 Redirigiendo a selección de avatar con ID:", playerId);
-
-                    // Guardamos la info en sessionStorage para recuperarla en la siguiente página
-                    sessionStorage.setItem("playerId", playerId);
-                    sessionStorage.setItem("sala", sala);
-                    sessionStorage.setItem("playerName", nombre);
-                    window.location.href = "avatar-selector.html";
-                }
-            } catch (error) {
-                console.error("❌ Error procesando mensaje WebSocket:", error);
-            }
-        };
-
-        ws.onerror = (event) => {
-            console.error("❌ Error en WebSocket:", event);
-        };
-
-        ws.onclose = () => {
-            console.warn("⚠️ Conexión WebSocket cerrada.");
-        };
-    }
-</script> 
+        function seleccionarAvatar(avatar) {
+            const playerId = sessionStorage.getItem("playerId");
+            fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: playerId, avatar })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        sessionStorage.setItem("avatar", avatar);
+                        alert("Avatar seleccionado correctamente. ¡Listo para jugar!");
+                        // Aquí puedes implementar la lógica para proceder al juego
+                    } else {
+                        alert("Hubo un error al seleccionar el avatar.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error enviando avatar:", err);
+                    alert("Hubo un error al seleccionar el avatar.");
+                });
+        }
+    </script>
 </body>
 </html>
