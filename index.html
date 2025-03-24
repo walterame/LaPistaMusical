@@ -128,22 +128,34 @@
         }
 
         function seleccionarAvatar(avatar) {
-            const playerId = sessionStorage.getItem("playerId");
-            fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: playerId, avatar })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Respuesta del servidor:", data); // Agregar este log
+    const playerId = sessionStorage.getItem("playerId");
 
-                     if (data.mensaje && data.mensaje === "Avatar seleccionado con éxito") {
+    // Eliminar la clase 'avatar-seleccionado' de todos los avatares
+    const avatars = document.querySelectorAll(".avatar");
+    avatars.forEach(img => img.classList.remove("avatar-seleccionado"));
+
+    // Seleccionar el avatar actual y agregar la clase 'avatar-seleccionado'
+    const avatarSeleccionado = Array.from(avatars).find(img => img.src.includes(avatar));
+    if (avatarSeleccionado) {
+        avatarSeleccionado.classList.add("avatar-seleccionado");
+    }
+
+    // Enviar el avatar seleccionado al servidor
+    fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: playerId, avatar })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Respuesta del servidor:", data);
+
+            if (data.mensaje && data.mensaje === "Avatar seleccionado con éxito") {
                 sessionStorage.setItem("avatar", avatar);
-                alert("Avatar seleccionado correctamente. ¡Listo para jugar!");
+
                 // Aquí puedes implementar la lógica para proceder al juego
             } else {
-                alert("Hubo un error al seleccionar el avatar. No se guardó en sessionStorage.");
+                alert("Hubo un error al seleccionar el avatar.");
             }
         })
         .catch(err => {
