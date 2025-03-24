@@ -135,7 +135,11 @@
     avatars.forEach(img => img.classList.remove("avatar-seleccionado"));
 
     // Seleccionar el avatar actual y agregar la clase 'avatar-seleccionado'
-    const avatarSeleccionado = Array.from(avatars).find(img => img.src.includes(avatar));
+    const avatarSeleccionado = Array.from(avatars).find(img => {
+        const imgName = img.src.split('/').pop(); // Obtiene solo el nombre del archivo
+        return imgName === avatar; // Compara con el nombre del avatar
+    });
+
     if (avatarSeleccionado) {
         avatarSeleccionado.classList.add("avatar-seleccionado");
     }
