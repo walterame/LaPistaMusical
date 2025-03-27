@@ -30,10 +30,24 @@
     </section>
 
     <!-- Sección de selección de avatar -->
-    <section id="avatarSection" style="display: none;">
-        <h1 class="main_text">Selecciona tu Avatar</h1>
-        <div class="avatar-grid" id="avatarGrid"></div>
-    </section>
+<section id="avatarSection" style="display: none;">
+    <h1 class="main_text">Selecciona tu Avatar</h1>
+    <div class="avatar-grid" id="avatarGrid"></div>
+    <button id="btnListo" onclick="confirmarAvatar()" disabled>Listo</button>
+</section>
+
+<!-- Sección para el primer jugador (host) -->
+<section id="hostSection" style="display: none;">
+    <h1 class="main_text">Jugadores en la Sala</h1>
+    <ul id="playerList"></ul>
+    <button id="btnComenzar" onclick="comenzarPartida()">Comenzar Partida</button>
+</section>
+
+<!-- Sección para jugadores no host -->
+<section id="waitingSection" style="display: none;">
+    <h1 class="main_text">Esperando</h1>
+    <p id="waitingMessage"></p>
+</section>
 
     <script>
         let ws;
@@ -127,45 +141,95 @@
             });
         }
 
-        function seleccionarAvatar(avatar) {
-    const playerId = sessionStorage.getItem("playerId");
-
-    // Eliminar la clase 'avatar-seleccionado' de todos los avatares
-    const avatars = document.querySelectorAll(".avatar");
-    avatars.forEach(img => img.classList.remove("avatar-seleccionado"));
-
-    // Seleccionar el avatar actual y agregar la clase 'avatar-seleccionado'
-    const avatarSeleccionado = Array.from(avatars).find(img => {
-        const imgName = decodeURIComponent(img.src.split('/').pop()); // Decodificar espacios y obtener el nombre del archivo
-        return imgName === avatar; // Compara con el nombre del avatar
-    });
-    console.log("Avatar seleccionado:", avatarSeleccionado); // se puede borrar
-    if (avatarSeleccionado) {
-        avatarSeleccionado.classList.add("avatar-seleccionado");
+        function confirmarAvatar() {
+    const avatar = sessionStorage.getItem("avatar");
+    if (!avatar) {
+        alert("Debes seleccionar un avatar antes de continuar.");
+        return;
     }
 
-    // Enviar el avatar seleccionado al servidor
+    const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
+    const playerName = sessionStorage.getItem("playerName");
+    const sala = sessionStorage.getItem("sala");
+
+    if (playerId === 0) {
+        // Es el host
+        mostrarSeccionHost();
+    } else {
+        // No es el host
+        mostrarSeccionEspera(playerName);
+    }
+}
+
+// Habilitar el botón "Listo" al seleccionar un avatar
+function seleccionarAvatar(avatar) {
+    const btnListo = document.getElementById("btnListo");
+
+    // Actualizar visualmente el avatar seleccionado
+    const avatars = document.querySelectorAll(".avatar");
+    avatars.forEach(img => img.classList.remove("avatar-seleccionado"));
+    const avatarSeleccionado = Array.from(avatars).find(img => {
+        const imgName = decodeURIComponent(img.src.split('/').pop());
+        return imgName === avatar;
+    });
+    if (avatarSeleccionado) avatarSeleccionado.classList.add("avatar-seleccionado");
+
+    // Almacenar el avatar seleccionado
+    sessionStorage.setItem("avatar", avatar);
+    btnListo.disabled = false;
+
+    // Enviar selección de avatar al servidor
+    const playerId = sessionStorage.getItem("playerId");
     fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: playerId, avatar })
-    })
+    }).then(response => response.json())
+      .then(data => console.log("Avatar seleccionado con éxito:", data))
+      .catch(err => console.error("Error seleccionando avatar:", err));
+}
+
+// Mostrar la sección del host
+function mostrarSeccionHost() {
+    document.getElementById("avatarSection").style.display = "none";
+    document.getElementById("hostSection").style.display = "block";
+
+    actualizarListaJugadores();
+}
+
+// Mostrar la sección de espera
+function mostrarSeccionEspera(hostName) {
+    document.getElementById("avatarSection").style.display = "none";
+    document.getElementById("waitingSection").style.display = "block";
+    document.getElementById("waitingMessage").innerText =
+        `Esperando a que el más capito, ${hostName}, inicie la partida.`;
+}
+
+// Actualizar la lista de jugadores (solo para el host)
+function actualizarListaJugadores() {
+    const playerList = document.getElementById("playerList");
+    fetch(`https://servidor-canciones.onrender.com/jugadores?sala=${sessionStorage.getItem("sala")}`)
         .then(response => response.json())
-        .then(data => {
-            console.log("Respuesta del servidor:", data);
-
-            if (data.mensaje && data.mensaje === "Avatar seleccionado con éxito") {
-                sessionStorage.setItem("avatar", avatar);
-
-                // Aquí puedes implementar la lógica para proceder al juego
-            } else {
-                alert("Hubo un error al seleccionar el avatar.");
-            }
+        .then(jugadores => {
+            playerList.innerHTML = ""; // Limpiar lista actual
+            jugadores.forEach(jugador => {
+                const li = document.createElement("li");
+                li.innerText = `${jugador.nombre} (Avatar: ${jugador.avatar || "No seleccionado"})`;
+                playerList.appendChild(li);
+            });
         })
-        .catch(err => {
-            console.error("Error enviando avatar:", err);
-            alert("Hubo un error al seleccionar el avatar.");
-        });
+        .catch(err => console.error("Error obteniendo lista de jugadores:", err));
+}
+
+// Comenzar la partida (solo para el host)
+function comenzarPartida() {
+    fetch("https://servidor-canciones.onrender.com/comenzar-partida", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sala: sessionStorage.getItem("sala") })
+    }).then(response => response.json())
+      .then(data => console.log("Partida comenzada:", data))
+      .catch(err => console.error("Error comenzando partida:", err));
 }
     </script>
 </body>
