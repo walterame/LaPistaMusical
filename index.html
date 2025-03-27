@@ -149,7 +149,6 @@
     }
 
     const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
-    const playerName = sessionStorage.getItem("playerName");
     const sala = sessionStorage.getItem("sala");
 
     if (playerId === 0) {
@@ -157,9 +156,24 @@
         mostrarSeccionHost();
     } else {
         // No es el host
-        mostrarSeccionEspera(playerName);
+        obtenerNombreHost(sala);
     }
 }
+
+// Obtener el nombre del host (playerId 0) desde el servidor
+function obtenerNombreHost(sala) {
+    fetch(`https://servidor-canciones.onrender.com/obtener-host?sala=${sala}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.nombreHost) {
+                mostrarSeccionEspera(data.nombreHost);
+            } else {
+                console.error("No se pudo obtener el nombre del host.");
+            }
+        })
+        .catch(err => console.error("Error obteniendo el nombre del host:", err));
+}
+
 
 // Habilitar el botón "Listo" al seleccionar un avatar
 function seleccionarAvatar(avatar) {
