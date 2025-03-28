@@ -38,14 +38,21 @@ align-items: flex-end;
 flex-wrap: wrap;   
 }
 
-.boton_unirse, .btnListo, .btnComenzar{
+.boton_unirse, .btnListo{
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin: 10px 0px 40px 0px;
 }
 
-.boton_unirse button, .btnListo button, .btnComenzar button{
+.btnComenzar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 0px 40px 0px;
+}
+
+.boton_unirse button, .btnListo button{
     font-size: 1.5rem; 
     padding: 15px 30px; 
     border: none;
@@ -55,6 +62,18 @@ flex-wrap: wrap;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
+.btnComenzar button{
+    font-size: 2rem; 
+    padding: 50px 30px;
+    border: revert;
+    border-radius: 65px;
+    background-color: #ff0026;
+    color: white; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
 
 .boton_unirse button:hover, .btnListo button:hover, .btnComenzar button:hover{
     background-color: #0056b3; 
