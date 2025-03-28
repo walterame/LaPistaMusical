@@ -5,17 +5,23 @@
   }
 
 .main_text {
-display: flex;
-justify-content: center;
-margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.capo_text{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
 }
 
 .texto_and_input1, .texto_and_input2
 {
-display: flex;
-justify-content: center;
-margin: 1rem 0 1rem 0;
-height: 2rem;
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0 1rem 0;
+    height: 2rem;
 }
 
 .texto_and_input1 label, .texto_and_input2 label
@@ -30,12 +36,12 @@ height: 2rem;
 
 .column_holder
 {
-display: flex;
-flex-direction: column;
-align-content: space-around;
-justify-content: space-between;
-align-items: flex-end;
-flex-wrap: wrap;   
+    display: flex;
+    flex-direction: column;
+    align-content: space-around;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;   
 }
 
 .boton_unirse, .btnListo{
