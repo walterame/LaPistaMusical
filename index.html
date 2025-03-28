@@ -32,15 +32,20 @@
     <!-- Sección de selección de avatar -->
 <section id="avatarSection" style="display: none;">
     <h1 class="main_text">Selecciona tu Avatar</h1>
-    <div class="avatar-grid" id="avatarGrid"></div>
-    <button id="btnListo" onclick="confirmarAvatar()" disabled>Listo</button>
+    <div class="avatar-grid" id="avatarGrid">
+    </div>
+    <div class="btnListo">
+        <button id="btnListo" onclick="confirmarAvatar()" disabled>Listo</button>
+    </div>
 </section>
 
 <!-- Sección para el primer jugador (host) -->
 <section id="hostSection" style="display: none;">
     <h1 class="main_text">Jugadores en la Sala</h1>
     <ul id="playerList"></ul>
-    <button id="btnComenzar" onclick="comenzarPartida()">¡Estamos Todos Listos!</button>
+    <div class="btnComenzar">
+        <button id="btnComenzar" onclick="comenzarPartida()">¡Estamos Todos Listos!</button>
+    </div>
 </section>
 
 <!-- Sección para jugadores no host -->
