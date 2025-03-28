@@ -33,14 +33,14 @@
 <section id="avatarSection" style="display: none;">
     <h1 class="main_text">Selecciona tu Avatar</h1>
     <div class="avatar-grid" id="avatarGrid"></div>
-    <button id="btnListo" onclick="confirmarAvatar()" disabled>Listo</button>
+    <button class="btnListo" onclick="confirmarAvatar()" disabled>Listo</button>
 </section>
 
 <!-- Sección para el primer jugador (host) -->
 <section id="hostSection" style="display: none;">
     <h1 class="main_text">Jugadores en la Sala</h1>
     <ul id="playerList"></ul>
-    <button id="btnComenzar" onclick="comenzarPartida()">Comenzar Partida</button>
+    <button class="btnComenzar" onclick="comenzarPartida()">¡Estamos Todos Listos!</button>
 </section>
 
 <!-- Sección para jugadores no host -->
@@ -217,6 +217,7 @@ function mostrarSeccionEspera(hostName) {
     document.getElementById("waitingSection").style.display = "block";
     document.getElementById("waitingMessage").innerText =
         `Esperando a que el más capito, ${hostName}, inicie la partida.`;
+        actualizarListaJugadores();
 }
 
 // Actualizar la lista de jugadores (solo para el host)
