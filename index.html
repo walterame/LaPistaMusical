@@ -155,6 +155,17 @@
     const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
     const sala = sessionStorage.getItem("sala");
 
+
+    // 🔹 Enviar estado READY al servidor
+    const mensajeReady = JSON.stringify({
+        tipo: "ready",
+        sala: sala,
+        id: playerId
+    });
+
+    console.log("📤 Enviando estado READY al servidor:", mensajeReady);
+    ws.send(mensajeReady);
+
     if (playerId === 0) {
         // Es el host
         mostrarSeccionHost();
@@ -220,7 +231,7 @@ function mostrarSeccionEspera(hostName) {
     document.getElementById("avatarSection").style.display = "none";
     document.getElementById("waitingSection").style.display = "block";
     document.getElementById("waitingMessage").innerText =
-        `Esperando a que el más capito, ${hostName}, inicie la partida.`;
+        `Esperando a que el más capito ${hostName}, inicie la partida.`;
         actualizarListaJugadores();
 }
 
