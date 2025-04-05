@@ -98,8 +98,17 @@
                         cargarAvatares();
                     }
                     if (respuesta.tipo === "jugador-ready") {
-            actualizarListaJugadores();
-        }
+                        actualizarListaJugadores();
+                    }
+
+                    if (respuesta.tipo === "error-jugadores-no-listos") {
+                        alert("Algunos jugadores aún no están listos. No se puede comenzar la partida.");
+                    }
+
+                    if (respuesta.tipo === "partida-iniciada") {
+                        console.log("🎮 La partida ha comenzado!");
+                        // Aquí podés redirigir a la siguiente pantalla o hacer lo que necesites
+                    }
 
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
