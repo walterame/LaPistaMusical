@@ -97,6 +97,10 @@
 
                         cargarAvatares();
                     }
+                    if (respuesta.tipo === "jugador-ready") {
+            actualizarListaJugadores();
+        }
+
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
                 }
@@ -238,15 +242,33 @@ function mostrarSeccionEspera(hostName) {
 // Actualizar la lista de jugadores (solo para el host)
 function actualizarListaJugadores() {
     const playerList = document.getElementById("playerList");
+    const btnComenzar = document.getElementById("btnComenzar");
+    const waitingMessage = document.getElementById("waitingMessage");
+
     fetch(`https://servidor-canciones.onrender.com/jugadores?sala=${sessionStorage.getItem("sala")}`)
         .then(response => response.json())
         .then(jugadores => {
             playerList.innerHTML = ""; // Limpiar lista actual
+            let todosListos = true; // Suponemos que todos están listos
+
             jugadores.forEach(jugador => {
                 const li = document.createElement("li");
-                li.innerText = `${jugador.nombre} (Avatar: ${jugador.avatar || "No seleccionado"})`;
+                li.innerText = `${jugador.nombre} ${jugador.ready ? "✅" : "❌"}`;
                 playerList.appendChild(li);
+
+                if (!jugador.ready) {
+                    todosListos = false; // Si hay al menos un jugador no listo, cambiamos la variable
+                }
             });
+
+            // Si todos están listos, habilitar el botón; de lo contrario, mostrar mensaje de espera
+            if (todosListos) {
+                btnComenzar.disabled = false;
+                waitingMessage.innerText = "¡Todos están listos! Puedes comenzar la partida.";
+            } else {
+                btnComenzar.disabled = true;
+                waitingMessage.innerText = "Esperando a que todos los jugadores estén listos...";
+            }
         })
         .catch(err => console.error("Error obteniendo lista de jugadores:", err));
 }
