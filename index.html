@@ -275,13 +275,14 @@ function actualizarListaJugadores() {
 
 // Comenzar la partida (solo para el host)
 function comenzarPartida() {
-    fetch("https://servidor-canciones.onrender.com/comenzar-partida", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sala: sessionStorage.getItem("sala") })
-    }).then(response => response.json())
-      .then(data => console.log("Partida comenzada:", data))
-      .catch(err => console.error("Error comenzando partida:", err));
+    const sala = sessionStorage.getItem("sala");
+
+ws.send(JSON.stringify({
+    tipo: "comenzar-partida",
+    sala: sala
+}));
+
+console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
 }
     </script>
 </body>
