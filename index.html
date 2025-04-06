@@ -97,9 +97,9 @@
 
                         cargarAvatares();
                     }
-                    if (respuesta.tipo === "jugador-ready") {
-                        actualizarListaJugadores();
-                    }
+                    // if (respuesta.tipo === "jugador-ready") {
+                    //     actualizarListaJugadores();
+                    // }
 
                     if (respuesta.tipo === "error-jugadores-no-listos") {
                         alert("Algunos jugadores aún no están listos. No se puede comenzar la partida.");
@@ -236,7 +236,7 @@ function mostrarSeccionHost() {
     document.getElementById("avatarSection").style.display = "none";
     document.getElementById("hostSection").style.display = "block";
 
-    actualizarListaJugadores();
+    // actualizarListaJugadores();
 }
 
 // Mostrar la sección de espera
@@ -245,42 +245,42 @@ function mostrarSeccionEspera(hostName) {
     document.getElementById("waitingSection").style.display = "block";
     document.getElementById("waitingMessage").innerText =
         `Esperando a que el más capito ${hostName}, inicie la partida.`;
-        actualizarListaJugadores();
+        // actualizarListaJugadores();
 }
 
 // Actualizar la lista de jugadores (solo para el host)
-function actualizarListaJugadores() {
-    const playerList = document.getElementById("playerList");
-    const btnComenzar = document.getElementById("btnComenzar");
-    const waitingMessage = document.getElementById("waitingMessage");
+// function actualizarListaJugadores() {
+//     const playerList = document.getElementById("playerList");
+//     const btnComenzar = document.getElementById("btnComenzar");
+//     const waitingMessage = document.getElementById("waitingMessage");
 
-    fetch(`https://servidor-canciones.onrender.com/jugadores?sala=${sessionStorage.getItem("sala")}`)
-        .then(response => response.json())
-        .then(jugadores => {
-            playerList.innerHTML = ""; // Limpiar lista actual
-            let todosListos = true; // Suponemos que todos están listos
+//     fetch(`https://servidor-canciones.onrender.com/jugadores?sala=${sessionStorage.getItem("sala")}`)
+//         .then(response => response.json())
+//         .then(jugadores => {
+//             playerList.innerHTML = ""; // Limpiar lista actual
+//             let todosListos = true; // Suponemos que todos están listos
 
-            jugadores.forEach(jugador => {
-                const li = document.createElement("li");
-                li.innerText = `${jugador.nombre} ${jugador.ready ? "✅" : "❌"}`;
-                playerList.appendChild(li);
+//             jugadores.forEach(jugador => {
+//                 const li = document.createElement("li");
+//                 li.innerText = `${jugador.nombre} ${jugador.ready ? "✅" : "❌"}`;
+//                 playerList.appendChild(li);
 
-                if (!jugador.ready) {
-                    todosListos = false; // Si hay al menos un jugador no listo, cambiamos la variable
-                }
-            });
+//                 if (!jugador.ready) {
+//                     todosListos = false; // Si hay al menos un jugador no listo, cambiamos la variable
+//                 }
+//             });
 
-            // Si todos están listos, habilitar el botón; de lo contrario, mostrar mensaje de espera
-            if (todosListos) {
-                btnComenzar.disabled = false;
-                waitingMessage.innerText = "¡Todos están listos! Puedes comenzar la partida.";
-            } else {
-                btnComenzar.disabled = true;
-                waitingMessage.innerText = "Esperando a que todos los jugadores estén listos...";
-            }
-        })
-        .catch(err => console.error("Error obteniendo lista de jugadores:", err));
-}
+//             // Si todos están listos, habilitar el botón; de lo contrario, mostrar mensaje de espera
+//             if (todosListos) {
+//                 btnComenzar.disabled = false;
+//                 waitingMessage.innerText = "¡Todos están listos! Puedes comenzar la partida.";
+//             } else {
+//                 btnComenzar.disabled = true;
+//                 waitingMessage.innerText = "Esperando a que todos los jugadores estén listos...";
+//             }
+//         })
+//         .catch(err => console.error("Error obteniendo lista de jugadores:", err));
+// }
 
 // Comenzar la partida (solo para el host)
 function comenzarPartida() {
