@@ -52,8 +52,20 @@
     <h1 class="capo_text" id="waitingMessage"></h1>
 </section>
 
+ <!-- Sección de pulsador e inputs -->
+ <section id="juegoSection" style="display: none;">
+    <div class="input-container">
+        <input id="inputTitulo" type="text" placeholder="Título de la canción" disabled>
+        <input id="inputArtista" type="text" placeholder="Nombre del artista" disabled>
+    </div>
+    <div class="pulsador-container">
+        <img id="pulsador" src="./images/pulsador-gris.webp" alt="Pulsador" onclick="manejarPulsador()">
+    </div>
+</section>
+
     <script>
         let ws;
+        let estadoPulsador = "inoperable"; // "inoperable", "operable", "pulsado"
 
         document.getElementById("codigo").addEventListener("input", function () {
             this.value = this.value.toUpperCase();
@@ -103,7 +115,7 @@
 
                     if (respuesta.tipo === "partida-iniciada") {
                         console.log("🎮 La partida ha comenzado!");
-                        // Aquí podés redirigir a la siguiente pantalla o hacer lo que necesites
+                        mostrarJuego();
                     }
 
                 } catch (error) {
@@ -252,6 +264,53 @@ ws.send(JSON.stringify({
 
 console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
 }
+
+function mostrarJuego() {
+            document.getElementById("hostSection").style.display = "none";
+            document.getElementById("waitingSection").style.display = "none";
+            document.getElementById("juegoSection").style.display = "block";
+
+            // Habilitamos el pulsador en este ejemplo
+            setEstadoPulsador("inoperable");
+        }
+
+        function setEstadoPulsador(estado) {
+            const pulsador = document.getElementById("pulsador");
+            estadoPulsador = estado;
+
+            if (estado === "inoperable") {
+                pulsador.src = "./images/pulsador-gris.webp";
+                pulsador.style.pointerEvents = "none";
+            } else if (estado === "operable") {
+                pulsador.src = "./images/pulsador-verde.webp";
+                pulsador.style.pointerEvents = "auto";
+            } else if (estado === "pulsado") {
+                pulsador.src = "./images/pulsador-rojo.webp";
+                pulsador.style.pointerEvents = "none";
+            }
+        }
+
+        function manejarPulsador() {
+            
+            if (estadoPulsador !== "operable") return;
+            setEstadoPulsador("pulsado");
+
+            // Habilitar input del título
+            document.getElementById("inputTitulo").disabled = false;
+
+            // Enviar mensaje al servidor que el jugador pulsó (si querés)
+            ws.send(JSON.stringify({
+                tipo: "pulsador",
+                id: parseInt(sessionStorage.getItem("playerId")),
+                sala: sessionStorage.getItem("sala")
+            }));
+        }
+
+        // Función que podrías usar luego para habilitar el input del artista
+        function habilitarInputArtista() {
+            document.getElementById("inputArtista").disabled = false;
+        }
+
     </script>
 </body>
 </html>
