@@ -279,13 +279,13 @@ function mostrarJuego() {
             estadoPulsador = estado;
 
             if (estado === "inoperable") {
-                pulsador.src = "./images/pulsador-gris.webp";
+                pulsador.src = "./images/Pulsador Idle.webp";
                 pulsador.style.pointerEvents = "none";
             } else if (estado === "operable") {
-                pulsador.src = "./images/pulsador-verde.webp";
+                pulsador.src = "./images/pulsador Ready.webp";
                 pulsador.style.pointerEvents = "auto";
             } else if (estado === "pulsado") {
-                pulsador.src = "./images/pulsador-rojo.webp";
+                pulsador.src = "./images/pulsador Apretado.webp";
                 pulsador.style.pointerEvents = "none";
             }
         }
