@@ -59,7 +59,7 @@
         <input id="inputArtista" type="text" placeholder="Nombre del artista" disabled>
     </div>
     <div class="pulsador-container">
-        <img id="pulsador" src="./images/pulsador-gris.webp" alt="Pulsador" onclick="manejarPulsador()">
+        <img id="pulsador" src="./images/Pulsador Idle.webp" alt="Pulsador" onclick="manejarPulsador()">
     </div>
 </section>
 
@@ -270,21 +270,21 @@ function mostrarJuego() {
             document.getElementById("waitingSection").style.display = "none";
             document.getElementById("juegoSection").style.display = "block";
 
-            // Habilitamos el pulsador en este ejemplo
-            setEstadoPulsador("inoperable");
+            // Empieza el pulsador en Idle
+            setEstadoPulsador("Idle");
         }
 
         function setEstadoPulsador(estado) {
             const pulsador = document.getElementById("pulsador");
             estadoPulsador = estado;
 
-            if (estado === "inoperable") {
+            if (estado === "Idle") {
                 pulsador.src = "./images/Pulsador Idle.webp";
                 pulsador.style.pointerEvents = "none";
-            } else if (estado === "operable") {
+            } else if (estado === "Ready") {
                 pulsador.src = "./images/pulsador Ready.webp";
                 pulsador.style.pointerEvents = "auto";
-            } else if (estado === "pulsado") {
+            } else if (estado === "Apretado") {
                 pulsador.src = "./images/pulsador Apretado.webp";
                 pulsador.style.pointerEvents = "none";
             }
@@ -292,8 +292,8 @@ function mostrarJuego() {
 
         function manejarPulsador() {
             
-            if (estadoPulsador !== "operable") return;
-            setEstadoPulsador("pulsado");
+            if (estadoPulsador !== "Ready") return;
+            setEstadoPulsador("Apretado");
 
             // Habilitar input del título
             document.getElementById("inputTitulo").disabled = false;
