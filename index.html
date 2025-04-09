@@ -118,6 +118,15 @@
                         mostrarJuego();
                     }
 
+                    if (respuesta.tipo === "activar_pulsadores") {
+                        console.log("🚨 Activando pulsadores!");
+                        setEstadoPulsador("Ready");
+                        // Vibración corta
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100); // 100 milisegundos
+                        }
+                    }
+
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
                 }
