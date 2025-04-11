@@ -309,7 +309,7 @@ function mostrarJuego() {
 
             // Enviar mensaje al servidor que el jugador pulsó (si querés)
             ws.send(JSON.stringify({
-                tipo: "pulsador",
+                tipo: "pulsador_presionado",
                 id: parseInt(sessionStorage.getItem("playerId")),
                 sala: sessionStorage.getItem("sala")
             }));
