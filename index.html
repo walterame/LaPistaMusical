@@ -89,7 +89,7 @@
                 ws.send(mensaje);
             };
 
-            ws.onmessage = (event) => {
+            ws.onmessage = (event) => { // Recibe mensajes del servidor
                 console.log("📩 Mensaje recibido:", event.data);
                 try {
                     const respuesta = JSON.parse(event.data);
@@ -324,6 +324,22 @@ function mostrarJuego() {
         function habilitarInputArtista() {
             document.getElementById("inputArtista").disabled = false;
         }
+
+    // Enviar el texto del inputTitulo al servidor en tiempo real
+    document.getElementById("inputTitulo").addEventListener("input", function () {
+    const texto = this.value;
+    const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
+    const sala = sessionStorage.getItem("sala");
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            tipo: "titulo-actualizado",
+            sala: sala,
+            id: playerId,
+            texto: texto
+        }));
+    }
+});
 
     </script>
 </body>
