@@ -339,6 +339,23 @@ function mostrarJuego() {
             titulo: texto
         }));
     }
+
+    document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
+        const sala = sessionStorage.getItem("sala");
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                tipo: "submit-titulo",
+                sala: sala,
+                id: playerId
+            }));
+        }
+        event.preventDefault(); // Evita que se genere una nueva línea si es un textarea/input multilínea
+    }
+});
+
 });
 
     </script>
