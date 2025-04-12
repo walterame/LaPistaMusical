@@ -130,7 +130,19 @@
                     if (respuesta.tipo === "desactivar_pulsador") {
                         console.log("⛔ Otro jugador ya pulsó. Desactivando pulsador.");
                         setEstadoPulsador("Idle");
-}
+                    }
+
+                    if (data.tipo === "titulo-correcto") {
+                        // Desactivar inputTitulo
+                        const inputTitulo = document.getElementById("inputTitulo");
+                        inputTitulo.disabled = true;
+                        inputTitulo.blur(); // por si tenía el foco
+
+                        // Activar inputArtista
+                        const inputArtista = document.getElementById("inputArtista");
+                        inputArtista.disabled = false;
+                        inputArtista.focus(); // dar foco automáticamente
+                    }
 
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
@@ -339,7 +351,7 @@ function mostrarJuego() {
             titulo: texto
         }));
     }
-
+    //Enviar respuesta al pulsar enter (titulo)
     document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
@@ -352,9 +364,40 @@ function mostrarJuego() {
                 id: playerId
             }));
         }
-        event.preventDefault(); // Evita que se genere una nueva línea si es un textarea/input multilínea
+        event.preventDefault();
     }
-});
+    });
+    // Enviar el texto del inputArtista al servidor en tiempo real
+    document.getElementById("inputArtista").addEventListener("input", function () {
+    const texto = this.value;
+    const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
+    const sala = sessionStorage.getItem("sala");
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            tipo: "artista-actualizado",
+            sala: sala,
+            id: playerId,
+            texto: texto
+        }));
+    }
+    });
+    //Enviar respuesta al pulsar enter (artista)
+    document.getElementById("inputArtista").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
+        const sala = sessionStorage.getItem("sala");
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+                tipo: "submit-artista",
+                sala: sala,
+                id: playerId
+            }));
+        }
+        event.preventDefault();
+    }
+    });
 
 });
 
