@@ -122,7 +122,7 @@
                         console.log("🚨 Activando pulsadores!");
                         setEstadoPulsador("Ready");
                         // Vibración corta
-                    if (navigator.vibrate) {
+                    if (estadoPulsador != "Ready" && navigator.vibrate) {
                         navigator.vibrate(100); // 100 milisegundos
                         }
                     }
@@ -330,11 +330,6 @@ function mostrarJuego() {
                 id: parseInt(sessionStorage.getItem("playerId")),
                 sala: sessionStorage.getItem("sala")
             }));
-        }
-
-        // Función que podrías usar luego para habilitar el input del artista
-        function habilitarInputArtista() {
-            document.getElementById("inputArtista").disabled = false;
         }
 
     // Enviar el texto del inputTitulo al servidor en tiempo real
