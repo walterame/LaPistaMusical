@@ -291,7 +291,7 @@ ws.send(JSON.stringify({
 console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
 }
 
-function mostrarJuego() {
+        function mostrarJuego() {
             document.getElementById("hostSection").style.display = "none";
             document.getElementById("waitingSection").style.display = "none";
             document.getElementById("juegoSection").style.display = "block";
@@ -373,7 +373,7 @@ function mostrarJuego() {
             tipo: "artista-actualizado",
             sala: sala,
             id: playerId,
-            texto: texto
+            artista: texto
         }));
     }
     });
