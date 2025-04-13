@@ -133,6 +133,16 @@
                     if (respuesta.tipo === "desactivar_todos_pulsadores") {
                         console.log("⛔ Desactivando pulsadores para todos.");
                         setEstadoPulsador("Idle");
+
+                        // Limpiar y desactivar input de título
+                        const inputTitulo = document.getElementById("inputTitulo");
+                        inputTitulo.value = "";
+                        inputTitulo.disabled = true;
+
+                        // Limpiar y desactivar input de artista
+                        const inputArtista = document.getElementById("inputArtista");
+                        inputArtista.value = "";
+                        inputArtista.disabled = true;
                     }
 
                     if (respuesta.tipo === "activar-input-artista") {
