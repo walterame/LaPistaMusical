@@ -346,6 +346,8 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
             titulo: texto
         }));
     }
+});
+
     //Enviar respuesta al pulsar enter (titulo)
     document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
@@ -361,7 +363,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
         }
         event.preventDefault();
     }
-    });
+});
     // Enviar el texto del inputArtista al servidor en tiempo real
     document.getElementById("inputArtista").addEventListener("input", function () {
     const texto = this.value;
@@ -376,7 +378,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
             artista: texto
         }));
     }
-    });
+});
     //Enviar respuesta al pulsar enter (artista)
     document.getElementById("inputArtista").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
@@ -392,8 +394,6 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
         }
         event.preventDefault();
     }
-    });
-
 });
 
     </script>
