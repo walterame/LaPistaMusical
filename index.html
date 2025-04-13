@@ -126,9 +126,12 @@
                         navigator.vibrate(100); // 100 milisegundos
                         }
                     }
-
                     if (respuesta.tipo === "desactivar_pulsador") {
                         console.log("⛔ Otro jugador ya pulsó. Desactivando pulsador.");
+                        setEstadoPulsador("Idle");
+                    }
+                    if (respuesta.tipo === "desactivar_todos_pulsadores") {
+                        console.log("⛔ Desactivando pulsadores para todos.");
                         setEstadoPulsador("Idle");
                     }
 
