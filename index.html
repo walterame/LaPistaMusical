@@ -120,11 +120,18 @@
 
                     if (respuesta.tipo === "activar_pulsadores") {
                         console.log("🚨 Activando pulsadores!");
+
+                        sessionStorage.setItem("yaRespondio", "false");
+                        document.getElementById("inputTitulo").disabled = true;
+                        document.getElementById("inputArtista").disabled = true;
                         setEstadoPulsador("Ready");
+
                         // Vibración corta
                     if (estadoPulsador != "Ready" && navigator.vibrate) {
                         navigator.vibrate(100); // 100 milisegundos
                         }
+
+
                     }
                     if (respuesta.tipo === "desactivar_pulsador") {
                         console.log("⛔ Otro jugador ya pulsó. Desactivando pulsador.");
@@ -170,9 +177,17 @@
                         inputArtista.value = "";
                         inputArtista.blur(); 
 
+                        sessionStorage.setItem("yaRespondio", "true");
                         setEstadoPulsador("Idle");
                     }
 
+                    if (respuesta.tipo === "reactivar_pulsadores_menos") {
+                        const yaRespondio = sessionStorage.getItem("yaRespondio");
+    
+                        if (yaRespondio === "false") {
+                        setEstadoPulsador("Ready");
+                        }
+                    }
 
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
@@ -350,7 +365,8 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
             
             if (estadoPulsador !== "Ready") return;
             setEstadoPulsador("Apretado");
-
+            
+            sessionStorage.setItem("yaRespondio", "false"); // Todavía no respondió
             // Habilitar input del título
             document.getElementById("inputTitulo").disabled = false;
 
@@ -361,6 +377,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
                 sala: sessionStorage.getItem("sala")
             }));
         }
+
 
     // Enviar el texto del inputTitulo al servidor en tiempo real
     document.getElementById("inputTitulo").addEventListener("input", function () {
