@@ -158,14 +158,16 @@
                     }
 
                     if (respuesta.tipo === "desactivar_pulsador_individual") {
-                        // Desactivar inputTitulo
+                        // Desactivar inputTitulo y limpiar texto
                         const inputTitulo = document.getElementById("inputTitulo");
                         inputTitulo.disabled = true;
+                        inputTitulo.value = "";
                         inputTitulo.blur(); 
 
-                        // Desactivar inputArtista
+                        // Desactivar inputArtista y limpiar texto
                         const inputArtista = document.getElementById("inputArtista");
                         inputArtista.disabled = true;
+                        inputArtista.value = "";
                         inputArtista.blur(); 
 
                         setEstadoPulsador("Idle");
