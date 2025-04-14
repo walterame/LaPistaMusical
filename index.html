@@ -157,6 +157,21 @@
                         inputArtista.focus(); // dar foco automáticamente
                     }
 
+                    if (respuesta.tipo === "desactivar_pulsador_individual") {
+                        // Desactivar inputTitulo
+                        const inputTitulo = document.getElementById("inputTitulo");
+                        inputTitulo.disabled = true;
+                        inputTitulo.blur(); 
+
+                        // Desactivar inputArtista
+                        const inputArtista = document.getElementById("inputArtista");
+                        inputArtista.disabled = true;
+                        inputArtista.blur(); 
+
+                        setEstadoPulsador("Idle");
+                    }
+
+
                 } catch (error) {
                     console.error("❌ Error procesando mensaje WebSocket:", error);
                 }
