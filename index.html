@@ -66,6 +66,7 @@
     <script>
         let ws;
         let estadoPulsador = "inoperable"; // "inoperable", "operable", "pulsado"
+        let rondaActual = 0;
 
         document.getElementById("codigo").addEventListener("input", function () {
             this.value = this.value.toUpperCase();
@@ -120,7 +121,7 @@
 
                     if (respuesta.tipo === "activar_pulsadores") {
                         console.log("🚨 Activando pulsadores!");
-
+                        rondaActual = respuesta.numeroDeRonda;
                         sessionStorage.setItem("yaRespondio", "false");
                         document.getElementById("inputTitulo").disabled = true;
                         document.getElementById("inputArtista").disabled = true;
@@ -130,8 +131,6 @@
                     if (estadoPulsador != "Ready" && navigator.vibrate) {
                         navigator.vibrate(100); // 100 milisegundos
                         }
-
-
                     }
                     if (respuesta.tipo === "desactivar_pulsador") {
                         console.log("⛔ Otro jugador ya pulsó. Desactivando pulsador.");
@@ -383,7 +382,8 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
             ws.send(JSON.stringify({
                 tipo: "pulsador_presionado",
                 id: parseInt(sessionStorage.getItem("playerId")),
-                sala: sessionStorage.getItem("sala")
+                sala: sessionStorage.getItem("sala"),
+                numeroDeRonda: rondaActual
             }));
         }
 
