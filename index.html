@@ -125,12 +125,7 @@
                         sessionStorage.setItem("yaRespondio", "false");
                         document.getElementById("inputTitulo").disabled = true;
                         document.getElementById("inputArtista").disabled = true;
-
-                        // Desactivar el pulsador durante la pausa
-                        setEstadoPulsador("Inoperable");
-                        setTimeout(() => {
                         setEstadoPulsador("Ready");
-                        }, 1000); // 1 segundo de pausa
 
                         // Vibración corta
                     if (estadoPulsador != "Ready" && navigator.vibrate) {
