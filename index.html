@@ -407,15 +407,16 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
     //Enviar respuesta al pulsar enter (titulo)
     document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
-        const texto = this.value; // revisar y borrar
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
         const sala = sessionStorage.getItem("sala");
+        const titulo = this.value.trim();
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 tipo: "submit-titulo",
                 sala: sala,
-                id: playerId
+                id: playerId,
+                titulo: titulo
             }));
         }
         event.preventDefault();
@@ -442,7 +443,6 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
     //Enviar respuesta al pulsar enter (artista)
     document.getElementById("inputArtista").addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
-        const texto = this.value; // revisar y borrar
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
         const sala = sessionStorage.getItem("sala");
 
