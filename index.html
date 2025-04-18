@@ -81,7 +81,8 @@
                 return;
             }
 
-            ws = new WebSocket("wss://servidor-canciones.onrender.com");
+            // ws = new WebSocket("wss://servidor-canciones.onrender.com");
+            ws = new WebSocket("wss://walterame666.npkn.net/servidor-pista-musical/");
 
             ws.onopen = () => {
                 console.log("✅ Conectado al servidor WebSocket.");
@@ -277,7 +278,8 @@
 
 // Obtener el nombre del host (playerId 0) desde el servidor
 function obtenerNombreHost(sala) {
-    fetch(`https://servidor-canciones.onrender.com/obtener-host?sala=${sala}`)
+    // fetch(`https://servidor-canciones.onrender.com/obtener-host?sala=${sala}`)
+    fetch(`https://walterame666.npkn.net/servidor-pista-musical/obtener-host?sala=${sala}`)
         .then(response => response.json())
         .then(data => {
             if (data && data.nombreHost) {
@@ -309,7 +311,8 @@ function seleccionarAvatar(avatar) {
 
     // Enviar selección de avatar al servidor
     const playerId = sessionStorage.getItem("playerId");
-    fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
+    // fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
+    fetch("https://walterame666.npkn.net/servidor-pista-musical/seleccionar-avatar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: playerId, avatar })
