@@ -445,12 +445,14 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
     if (event.key === "Enter") {
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
         const sala = sessionStorage.getItem("sala");
+        const artista = this.value.trim();
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({
                 tipo: "submit-artista",
                 sala: sala,
-                id: playerId
+                id: playerId,
+                artista: artista
             }));
         }
         event.preventDefault();
