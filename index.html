@@ -67,6 +67,8 @@
         let ws;
         let estadoPulsador = "inoperable"; // "inoperable", "operable", "pulsado"
         let rondaActual = 0;
+        let tituloEnviado = false;
+        let artistaEnviado = false;
 
         document.getElementById("codigo").addEventListener("input", function () {
             this.value = this.value.toUpperCase();
@@ -127,6 +129,8 @@
                         document.getElementById("inputTitulo").disabled = true;
                         document.getElementById("inputArtista").disabled = true;
                         setEstadoPulsador("Ready");
+                        tituloEnviado = false;
+                        artistaEnviado = false;
 
                         // Vibración corta
                     if (estadoPulsador != "Ready" && navigator.vibrate) {
@@ -378,6 +382,8 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
             setEstadoPulsador("Apretado");
             
             sessionStorage.setItem("yaRespondio", "false"); // Todavía no respondió
+            tituloEnviado = false;
+            artistaEnviado = false;
             // Habilitar input del título
             document.getElementById("inputTitulo").disabled = false;
 
@@ -392,7 +398,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
 
     //Enviar respuesta al pulsar enter (titulo)
     document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && !tituloEnviado) {
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
         const sala = sessionStorage.getItem("sala");
         const titulo = this.value.trim();
@@ -404,6 +410,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
                 id: playerId,
                 titulo: titulo
             }));
+            tituloEnviado = true;
         }
         event.preventDefault();
     }
@@ -411,7 +418,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
 
     //Enviar respuesta al pulsar enter (artista)
     document.getElementById("inputArtista").addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && !artistaEnviado) {
         const playerId = parseInt(sessionStorage.getItem("playerId"), 10);
         const sala = sessionStorage.getItem("sala");
         const artista = this.value.trim();
@@ -423,6 +430,7 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
                 id: playerId,
                 artista: artista
             }));
+            artistaEnviado = true;
         }
         event.preventDefault();
     }
