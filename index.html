@@ -82,7 +82,7 @@
             }
 
             // ws = new WebSocket("wss://servidor-canciones.onrender.com");
-            ws = new WebSocket("wss://servidor-canciones.vercel.app/");
+            ws = new WebSocket("wss://server-pista-musical.glitch.me");
 
             ws.onopen = () => {
                 console.log("✅ Conectado al servidor WebSocket.");
@@ -279,7 +279,7 @@
 // Obtener el nombre del host (playerId 0) desde el servidor
 function obtenerNombreHost(sala) {
     // fetch(`https://servidor-canciones.onrender.com/obtener-host?sala=${sala}`)
-    fetch(`https://servidor-canciones.vercel.app/obtener-host?sala=${sala}`)
+    fetch(`https://server-pista-musical.glitch.me/obtener-host?sala=${sala}`)
         .then(response => response.json())
         .then(data => {
             if (data && data.nombreHost) {
@@ -312,7 +312,7 @@ function seleccionarAvatar(avatar) {
     // Enviar selección de avatar al servidor
     const playerId = sessionStorage.getItem("playerId");
     // fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
-    fetch("https://servidor-canciones.vercel.app/seleccionar-avatar", {
+    fetch("https://server-pista-musical.glitch.me/seleccionar-avatar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: playerId, avatar })
