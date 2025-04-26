@@ -69,6 +69,7 @@
         let rondaActual = 0;
         let tituloEnviado = false;
         let artistaEnviado = false;
+        let reintentoReconectar = false;
 
         document.getElementById("codigo").addEventListener("input", function () {
             this.value = this.value.toUpperCase();
@@ -83,20 +84,41 @@
                 return;
             }
 
-            // ws = new WebSocket("wss://servidor-canciones.onrender.com");
+            sessionStorage.setItem("sala", sala);
+            sessionStorage.setItem("playerName", nombre);
+            conectarWebSocket(sala, nombre);
+            // ws = new WebSocket("wss://server-pista-musical.glitch.me");
+        }
+        
+        function conectarWebSocket(sala, nombre, playerId = null) {
             ws = new WebSocket("wss://server-pista-musical.glitch.me");
 
             ws.onopen = () => {
                 console.log("✅ Conectado al servidor WebSocket.");
-                const mensaje = JSON.stringify({ tipo: "unir", sala, nombre });
-                console.log("📤 Enviando:", mensaje);
-                ws.send(mensaje);
+
+                const mensaje = playerId
+            ? { tipo: "reconectar", sala, id: playerId }
+            : { tipo: "unir", sala, nombre };
+
+            console.log("📤 Enviando:", mensaje);
+            ws.send(JSON.stringify(mensaje));
             };
 
             ws.onmessage = (event) => { // Recibe mensajes del servidor
                 console.log("📩 Mensaje recibido:", event.data);
                 try {
                     const respuesta = JSON.parse(event.data);
+
+                    // ✅ Nueva lógica para reconexión exitosa
+                    if (respuesta.tipo === "reconexion-exitosa") {
+                        console.log("🔄 Reconexión exitosa.");
+                        const avatar = sessionStorage.getItem("avatar");
+                    if (avatar) {
+                        ws.send(JSON.stringify({ tipo: "seleccionar_avatar", id: respuesta.id, avatar }));
+                    }
+                    mostrarSeccionSegunEstado();
+                    return;
+                }
 
                     if (respuesta.tipo === "confirmacion-union") {
                         const playerId = respuesta.id;
@@ -212,8 +234,21 @@
             };
 
             ws.onclose = () => {
-                console.warn("⚠️ Conexión WebSocket cerrada.");
-            };
+        console.warn("⚠️ Conexión WebSocket cerrada.");
+        if (!reintentoReconectar) {
+            reintentoReconectar = true;
+            setTimeout(() => {
+                const sala = sessionStorage.getItem("sala");
+                const nombre = sessionStorage.getItem("playerName");
+                const id = parseInt(sessionStorage.getItem("playerId"), 10);
+
+                if (sala && nombre && !isNaN(id)) {
+                    console.log("🔁 Intentando reconectar...");
+                    conectarWebSocket(sala, nombre, id);
+                }
+            }, 2000); // espera 2 segundos antes de intentar reconectar
+        }
+    };
         }
 
         function cargarAvatares() {
@@ -282,7 +317,6 @@
 
 // Obtener el nombre del host (playerId 0) desde el servidor
 function obtenerNombreHost(sala) {
-    // fetch(`https://servidor-canciones.onrender.com/obtener-host?sala=${sala}`)
     fetch(`https://server-pista-musical.glitch.me/obtener-host?sala=${sala}`)
         .then(response => response.json())
         .then(data => {
@@ -315,7 +349,6 @@ function seleccionarAvatar(avatar) {
 
     // Enviar selección de avatar al servidor
     const playerId = sessionStorage.getItem("playerId");
-    // fetch("https://servidor-canciones.onrender.com/seleccionar-avatar", {
     fetch("https://server-pista-musical.glitch.me/seleccionar-avatar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -395,6 +428,27 @@ console.log("📤 Enviado mensaje 'comenzar-partida' al servidor.");
                 numeroDeRonda: rondaActual
             }));
         }
+
+        function mostrarSeccionSegunEstado() {
+            const avatar = sessionStorage.getItem("avatar");
+            const yaRespondio = sessionStorage.getItem("yaRespondio");
+
+        if (!avatar) {
+            document.getElementById("joinSection").style.display = "none";
+            document.getElementById("avatarSection").style.display = "block";
+            cargarAvatares();
+        } else {
+            document.getElementById("joinSection").style.display = "none";
+            document.getElementById("avatarSection").style.display = "none";
+            document.getElementById("waitingSection").style.display = "block";
+            document.getElementById("waitingMessage").innerText = "Esperando que comience la partida...";
+
+            // Si estabas en medio del juego
+            if (yaRespondio === "false") {
+                setEstadoPulsador("Ready");
+        }
+    }
+}
 
     //Enviar respuesta al pulsar enter (titulo)
     document.getElementById("inputTitulo").addEventListener("keydown", function (event) {
